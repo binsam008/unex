@@ -1,8 +1,8 @@
 import { useState } from "react";
 import emailjs from "@emailjs/browser";
+import { Mail, Phone, MapPin, Package, Weight, Ship } from "lucide-react";
 
 export default function Quote() {
-
   const [formData, setFormData] = useState({
     customerName: "",
     email: "",
@@ -12,7 +12,7 @@ export default function Quote() {
     shipmentType: "Sea",
     cargoType: "",
     weight: "",
-    message: ""
+    message: "",
   });
 
   const handleSubmit = (e) => {
@@ -28,127 +28,167 @@ export default function Quote() {
       cargo_type: formData.cargoType,
       weight: formData.weight,
       message: formData.message,
-      to_email: "unexlogistics@gmail.com" // ADMIN EMAIL
+      to_email: "unexlogistics@gmail.com",
     };
 
-    emailjs.send(
-      "service_kmgfchc",        // your service ID
-      "template_ct2q9y4",      // we will create this
-      templateParams,
-      "6mzefNX56lFODJ5ZM"        // your public key
-    )
-    .then(() => {
-      alert("Quote Request Sent Successfully ✅");
-      setFormData({
-        customerName: "",
-        email: "",
-        phone: "",
-        origin: "",
-        destination: "",
-        shipmentType: "Sea",
-        cargoType: "",
-        weight: "",
-        message: ""
+    emailjs
+      .send(
+        "service_kmgfchc",
+        "template_ct2q9y4",
+        templateParams,
+        "6mzefNX56lFODJ5ZM"
+      )
+      .then(() => {
+        alert("Quote Request Sent Successfully ✅");
+        setFormData({
+          customerName: "",
+          email: "",
+          phone: "",
+          origin: "",
+          destination: "",
+          shipmentType: "Sea",
+          cargoType: "",
+          weight: "",
+          message: "",
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("Failed to send request ❌");
       });
-    })
-    .catch((error) => {
-      console.error(error);
-      alert("Failed to send request ❌");
-    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-10">
-      <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow">
+    <div className="min-h-screen bg-[#F5F7FA] py-20 px-6 font-outfit">
+      <div className="max-w-4xl mx-auto bg-white p-10 rounded-3xl shadow-xl border border-gray-200">
 
-        <h1 className="text-3xl font-bold mb-6 text-center">
-          Get a Shipping Quote
+        {/* TITLE */}
+        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center text-[#0A1D45]">
+          Request a Shipping Quote
         </h1>
+        <p className="text-center text-gray-600 mb-10">
+          Fill in the details below and our team will contact you shortly.
+        </p>
 
-        <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-6">
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-8">
 
-          <input
-            required
-            placeholder="Full Name"
+          <InputField
+            label="Full Name"
             value={formData.customerName}
-            onChange={(e) => setFormData({...formData, customerName: e.target.value})}
-            className="border p-3 rounded-lg"
+            onChange={(e) =>
+              setFormData({ ...formData, customerName: e.target.value })
+            }
           />
 
-          <input
-            required
+          <InputField
+            label="Email Address"
             type="email"
-            placeholder="Email"
             value={formData.email}
-            onChange={(e) => setFormData({...formData, email: e.target.value})}
-            className="border p-3 rounded-lg"
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
           />
 
-          <input
-            required
-            placeholder="Phone Number"
+          <InputField
+            label="Phone Number"
             value={formData.phone}
-            onChange={(e) => setFormData({...formData, phone: e.target.value})}
-            className="border p-3 rounded-lg"
+            onChange={(e) =>
+              setFormData({ ...formData, phone: e.target.value })
+            }
           />
 
-          <select
-            value={formData.shipmentType}
-            onChange={(e) => setFormData({...formData, shipmentType: e.target.value})}
-            className="border p-3 rounded-lg"
-          >
-            <option>Sea</option>
-            <option>Air</option>
-            <option>Road</option>
-          </select>
+          {/* SHIPMENT TYPE */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1 font-archivo">
+              Shipment Type
+            </label>
+            <select
+              className="border rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-400 outline-none"
+              value={formData.shipmentType}
+              onChange={(e) =>
+                setFormData({ ...formData, shipmentType: e.target.value })
+              }
+            >
+              <option>Sea</option>
+              <option>Air</option>
+              <option>Road</option>
+            </select>
+          </div>
 
-          <input
-            required
-            placeholder="Origin (From)"
+          <InputField
+            label="Origin (From)"
             value={formData.origin}
-            onChange={(e) => setFormData({...formData, origin: e.target.value})}
-            className="border p-3 rounded-lg"
+            onChange={(e) =>
+              setFormData({ ...formData, origin: e.target.value })
+            }
           />
 
-          <input
-            required
-            placeholder="Destination (To)"
+          <InputField
+            label="Destination (To)"
             value={formData.destination}
-            onChange={(e) => setFormData({...formData, destination: e.target.value})}
-            className="border p-3 rounded-lg"
+            onChange={(e) =>
+              setFormData({ ...formData, destination: e.target.value })
+            }
           />
 
-          <input
-            placeholder="Cargo Type"
+          <InputField
+            label="Cargo Type"
             value={formData.cargoType}
-            onChange={(e) => setFormData({...formData, cargoType: e.target.value})}
-            className="border p-3 rounded-lg"
+            onChange={(e) =>
+              setFormData({ ...formData, cargoType: e.target.value })
+            }
           />
 
-          <input
-            placeholder="Weight (KG)"
+          <InputField
+            label="Weight (KG)"
             value={formData.weight}
-            onChange={(e) => setFormData({...formData, weight: e.target.value})}
-            className="border p-3 rounded-lg"
+            onChange={(e) =>
+              setFormData({ ...formData, weight: e.target.value })
+            }
           />
 
-          <textarea
-            placeholder="Additional Message"
-            value={formData.message}
-            onChange={(e) => setFormData({...formData, message: e.target.value})}
-            className="border p-3 rounded-lg md:col-span-2"
-          />
+          {/* MESSAGE */}
+          <div className="md:col-span-2 flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1 font-archivo">
+              Additional Message
+            </label>
+            <textarea
+              rows={4}
+              className="border rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-400 outline-none"
+              value={formData.message}
+              onChange={(e) =>
+                setFormData({ ...formData, message: e.target.value })
+              }
+            />
+          </div>
 
+          {/* SUBMIT BUTTON */}
           <button
             type="submit"
-            className="bg-purple-600 text-white py-3 rounded-lg md:col-span-2 hover:bg-purple-500"
+            className="md:col-span-2 bg-orange-500 hover:bg-orange-400 text-white py-4 rounded-xl text-lg font-semibold shadow-md transition"
           >
             Submit Quote Request
           </button>
-
         </form>
-
       </div>
+    </div>
+  );
+}
+
+/* REUSABLE INPUT FIELD */
+function InputField({ label, type = "text", value, onChange }) {
+  return (
+    <div className="flex flex-col">
+      <label className="text-sm font-medium text-gray-700 mb-1 font-archivo">
+        {label}
+      </label>
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        className="border rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-400 outline-none"
+      />
     </div>
   );
 }

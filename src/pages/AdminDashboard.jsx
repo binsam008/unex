@@ -58,7 +58,6 @@ export default function AdminDashboard() {
 
   const handleSubmit = async () => {
     try {
-
       const cleanData = {
         ...formData,
         logisticsType: formData.logisticsType || "Sea",
@@ -68,33 +67,21 @@ export default function AdminDashboard() {
 
       await setDoc(doc(db, "shipments", formData.invoice), cleanData);
 
-      // ✅ EMAILJS (ONLY WHEN STATUS CHANGES)
       if (isEditing && previousStatus !== formData.status) {
-
-const templateParams = {
-  customer_name: formData.customerName,
-  invoice: formData.invoice,
-  status: formData.status,
-  location: formData.currentLocation,
-  to_email: formData.email,
-  name: "UNEX Logistics",
-  email: "support@unex.com"
-};
-
+        const params = {
+          customer_name: formData.customerName,
+          invoice: formData.invoice,
+          status: formData.status,
+          location: formData.currentLocation,
+          to_email: formData.email
+        };
 
         emailjs.send(
           "service_t60r5r6",
           "template_1hwc68h",
-          templateParams,
-          "6mzefNX56lFODJ5ZM"   // 🔥 replace this
-        )
-        .then(() => {
-          alert("Status updated & email sent successfully ✅");
-        })
-        .catch((error) => {
-          console.error("Email error:", error);
-          alert("Email failed ❌");
-        });
+          params,
+          "6mzefNX56lFODJ5ZM"
+        );
       }
 
       alert(isEditing ? "Job Updated Successfully" : "Job Created Successfully");
@@ -133,17 +120,17 @@ const templateParams = {
 
   const handleEdit = (ship) => {
     setFormData({
-      invoice: ship.id || "",
-      customerName: ship.customerName || "",
-      email: ship.email || "",
-      phone: ship.phone || "",
-      logisticsType: ship.logisticsType || "Sea",
-      shipmentType: ship.shipmentType || "FCL",
-      origin: ship.origin || "",
-      destination: ship.destination || "",
-      status: ship.status || "DOCUMENT RECEIVED",
-      currentLocation: ship.currentLocation || "",
-      lastUpdated: ship.lastUpdated || ""
+      invoice: ship.id,
+      customerName: ship.customerName,
+      email: ship.email,
+      phone: ship.phone,
+      logisticsType: ship.logisticsType,
+      shipmentType: ship.shipmentType,
+      origin: ship.origin,
+      destination: ship.destination,
+      status: ship.status,
+      currentLocation: ship.currentLocation,
+      lastUpdated: ship.lastUpdated
     });
 
     setPreviousStatus(ship.status);
@@ -152,161 +139,112 @@ const templateParams = {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-[#F1F5F9] p-8 font-outfit py-25">
 
-      <div className="bg-white shadow-xl rounded-2xl p-8 max-w-6xl mx-auto">
+      {/* MAIN FORM PANEL */}
+      <div className="bg-white shadow-xl rounded-2xl p-10 max-w-5xl mx-auto border border-gray-200">
 
-        <h1 className="text-3xl font-bold mb-8">
+        <h1 className="text-3xl font-bold mb-10 text-[#0A1D45]">
           UNEX Job Management
         </h1>
 
+        {/* FORM GRID */}
         <div className="grid md:grid-cols-2 gap-6">
 
-          <input
+          <FormInput label="Job Number" disabled={isEditing}
             value={formData.invoice}
-            disabled={isEditing}
-            placeholder="Job Number"
-            className="border p-3 rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, invoice: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, invoice: e.target.value })}
           />
 
-          <input
+          <FormInput label="Customer Name"
             value={formData.customerName}
-            placeholder="Customer Name"
-            className="border p-3 rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, customerName: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
           />
 
-          <input
+          <FormInput label="Customer Email"
             value={formData.email}
-            placeholder="Customer Email"
-            className="border p-3 rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
 
-          <input
+          <FormInput label="Phone (+91...)"
             value={formData.phone}
-            placeholder="Phone (+91...)"
-            className="border p-3 rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, phone: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           />
 
-          <select
-            value={formData.logisticsType}
-            className="border p-3 rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, logisticsType: e.target.value })
-            }
-          >
-            <option>Sea</option>
-            <option>Air</option>
-            <option>Road</option>
-          </select>
+          <FormSelect label="Logistics Type" value={formData.logisticsType}
+            options={["Sea", "Air", "Road"]}
+            onChange={(e) => setFormData({ ...formData, logisticsType: e.target.value })}
+          />
 
-          <select
-            value={formData.shipmentType}
-            className="border p-3 rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, shipmentType: e.target.value })
-            }
-          >
-            <option>FCL</option>
-            <option>LCL</option>
-          </select>
+          <FormSelect label="Shipment Type" value={formData.shipmentType}
+            options={["FCL", "LCL"]}
+            onChange={(e) => setFormData({ ...formData, shipmentType: e.target.value })}
+          />
 
-          <input
+          <FormInput label="Origin"
             value={formData.origin}
-            placeholder="Origin"
-            className="border p-3 rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, origin: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
           />
 
-          <input
+          <FormInput label="Destination"
             value={formData.destination}
-            placeholder="Destination"
-            className="border p-3 rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, destination: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
           />
 
-          <select
-            value={formData.status}
-            className="border p-3 rounded-lg md:col-span-2"
-            onChange={(e) =>
-              setFormData({ ...formData, status: e.target.value })
-            }
-          >
-            {statusOptions.map((status, index) => (
-              <option key={index}>{status}</option>
-            ))}
-          </select>
+          <FormSelect full label="Shipment Status" value={formData.status}
+            options={statusOptions}
+            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+          />
 
-          <input
-            type="date"
+          <FormInput label="Last Updated" type="date"
             value={formData.lastUpdated}
-            className="border p-3 rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, lastUpdated: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, lastUpdated: e.target.value })}
           />
 
-          <input
+          <FormInput label="Current Location"
             value={formData.currentLocation}
-            placeholder="Current Location"
-            className="border p-3 rounded-lg"
-            onChange={(e) =>
-              setFormData({ ...formData, currentLocation: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, currentLocation: e.target.value })}
           />
 
         </div>
 
+        {/* SAVE BUTTON */}
         <button
           onClick={handleSubmit}
-          className="mt-8 w-full py-4 text-white font-semibold rounded-xl bg-gradient-to-r from-purple-600 to-purple-400 hover:opacity-90"
+          className="mt-10 w-full py-4 text-white text-lg font-semibold rounded-xl bg-gradient-to-r from-orange-500 to-orange-400 shadow-lg hover:opacity-90"
         >
           {isEditing ? "Update Job" : "Save Job"}
         </button>
 
       </div>
 
-      <div className="max-w-6xl mx-auto mt-10">
-        <h2 className="text-2xl font-bold mb-4">All Jobs</h2>
+      {/* JOB LIST */}
+      <div className="max-w-5xl mx-auto mt-12">
+
+        <h2 className="text-2xl font-bold mb-4 text-[#0A1D45]">All Jobs</h2>
 
         <div className="space-y-4">
           {shipments.map((ship) => (
-            <div
-              key={ship.id}
-              className="bg-white p-5 rounded-xl shadow flex justify-between items-center"
+            <div key={ship.id}
+              className="bg-white p-5 rounded-xl shadow flex justify-between items-center border border-gray-200 hover:shadow-lg transition"
             >
               <div>
-                <p className="font-semibold">{ship.id}</p>
+                <p className="font-semibold text-[#0A1D45]">{ship.id}</p>
                 <p>{ship.customerName}</p>
-                <p className="text-sm text-gray-600">{ship.status}</p>
+                <p className="text-sm text-gray-500">{ship.status}</p>
               </div>
 
               <div className="flex gap-3">
                 <button
                   onClick={() => handleEdit(ship)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500"
                 >
                   Edit
                 </button>
 
                 <button
                   onClick={() => handleDelete(ship.id)}
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg"
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-500"
                 >
                   Delete
                 </button>
@@ -316,7 +254,37 @@ const templateParams = {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
 
+/* COMPONENTS */
+
+function FormInput({ label, full, type = "text", ...props }) {
+  return (
+    <div className={`${full ? "md:col-span-2" : ""}`}>
+      <label className="block mb-1 font-semibold text-[#0A1D45]">{label}</label>
+      <input
+        type={type}
+        className="w-full border border-gray-300 px-4 py-3 rounded-xl shadow-sm focus:ring-2 focus:ring-orange-400"
+        {...props}
+      />
+    </div>
+  );
+}
+
+function FormSelect({ label, options, full, ...props }) {
+  return (
+    <div className={`${full ? "md:col-span-2" : ""}`}>
+      <label className="block mb-1 font-semibold text-[#0A1D45]">{label}</label>
+      <select
+        className="w-full border border-gray-300 px-4 py-3 rounded-xl shadow-sm focus:ring-2 focus:ring-orange-400"
+        {...props}
+      >
+        {options.map((op, i) => (
+          <option key={i}>{op}</option>
+        ))}
+      </select>
     </div>
   );
 }

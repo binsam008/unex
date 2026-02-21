@@ -11,6 +11,8 @@ import Quote from "./pages/Quote";
 import AdminLogin from "./pages/AdminLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/AdminDashboard";
+import Footer from "./components/Footer";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
@@ -27,10 +29,11 @@ function App() {
         <Route path="/support/documents" element={<Documents />} />
         <Route path="/support/prohibited-items" element={<ProhibitedItems />} />
         <Route path="/quote" element={<Quote />} />
+        <Route path="/contact" element={<Contact/>} />
 
 
         {/* Admin */}
-        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/admin-unexlogistics" element={<AdminLogin />} />
         <Route
           path="/admin-dashboard"
           element={
@@ -40,7 +43,9 @@ function App() {
           }
         />
       </Routes>
+      <Footer/>
     </>
+
   );
 }
 

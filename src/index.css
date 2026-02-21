@@ -1,1 +1,27 @@
 @import "tailwindcss";
+/* HIDE SCROLLBAR for Chrome, Safari, Edge */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* HIDE SCROLLBAR for Firefox */
+.no-scrollbar {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  gap: 2rem;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+  will-change: transform;
+}
+body {
+  font-family: 'Outfit', sans-serif;
+}
+
