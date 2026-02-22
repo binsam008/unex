@@ -10,6 +10,9 @@ export default function Navbar() {
   const location = useLocation();
   const isHome = location.pathname === "/";
 
+  /* AUTO CLOSE FUNCTION */
+  const closeMenu = () => setMobileOpen(false);
+
   /* SCROLL EFFECT */
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 40);
@@ -30,8 +33,8 @@ export default function Navbar() {
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${navbarBg}`}>
       <div className="container h-20 mx-auto px-6 py-4 flex justify-between items-center">
 
-        {/* LOGO — FIXED LARGE SIZE */}
-        <Link to="/" className="flex items-center">
+        {/* LOGO */}
+        <Link to="/" onClick={closeMenu} className="flex items-center">
           <img
             src="/logo.png"
             alt="UNEX"
@@ -79,11 +82,11 @@ export default function Navbar() {
       {mobileOpen && (
         <div className="bg-white/95 text-black px-6 py-4 space-y-4 md:hidden backdrop-blur-lg">
 
-          <MobileLink to="/" label="Home" />
-          <MobileLink to="/about" label="About" />
-          <MobileLink to="/services" label="Services" />
-          <MobileLink to="/track" label="Track Shipment" />
-          <MobileLink to="/contact" label="Contact" />
+          <MobileLink to="/" label="Home" onClick={closeMenu} />
+          <MobileLink to="/about" label="About" onClick={closeMenu} />
+          <MobileLink to="/services" label="Services" onClick={closeMenu} />
+          <MobileLink to="/track" label="Track Shipment" onClick={closeMenu} />
+          <MobileLink to="/contact" label="Contact" onClick={closeMenu} />
 
           {/* SUPPORT ACCORDION */}
           <div>
@@ -91,16 +94,18 @@ export default function Navbar() {
               <span>Support</span>
               <ChevronDown size={18} className={`transition ${supportOpen ? "rotate-180" : ""}`} />
             </button>
+
             {supportOpen && (
               <div className="mt-2 ml-4 space-y-2">
-                <MobileLink to="/support/documents" label="Documents" />
-                <MobileLink to="/support/prohibited-items" label="Prohibited Items" />
+                <MobileLink to="/support/documents" label="Documents" onClick={closeMenu} />
+                <MobileLink to="/support/prohibited-items" label="Prohibited Items" onClick={closeMenu} />
               </div>
             )}
           </div>
 
           <Link
             to="/quote"
+            onClick={closeMenu}
             className="block bg-orange-500 text-white px-6 py-2 rounded-full font-semibold shadow-md hover:bg-orange-400"
           >
             Get a Quote
@@ -120,6 +125,10 @@ function DropdownLink({ to, label }) {
   return <Link to={to} className="block px-4 py-2 hover:bg-gray-100">{label}</Link>;
 }
 
-function MobileLink({ to, label }) {
-  return <Link to={to} className="block hover:text-orange-500">{label}</Link>;
+function MobileLink({ to, label, onClick }) {
+  return (
+    <Link to={to} onClick={onClick} className="block hover:text-orange-500">
+      {label}
+    </Link>
+  );
 }

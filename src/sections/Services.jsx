@@ -5,34 +5,29 @@ export default function Services() {
 
   const services = [
     {
-      title: "Ocean Freight",
+      title: "International Courier Tracking",
       img: "/service1.png",
-      desc: "End-to-end ocean freight services ensuring secure and timely global shipments.",
+      desc: "Track your international shipments in real time with global coverage and accurate updates.",
     },
     {
-      title: "Air Freight",
+      title: "Door-to-Door Pickup & Delivery",
       img: "/service2.jpg",
-      desc: "Swift air freight services designed for urgent and high-value cargo worldwide.",
+      desc: "Fast doorstep pickup and secure delivery across domestic and international locations.",
     },
     {
-      title: "Land Transport",
+      title: "Import & Export Service",
       img: "/service3.jpg",
-      desc: "Efficient road transport services for seamless domestic and regional deliveries.",
+      desc: "Reliable import/export handling with documentation, customs, and freight support.",
     },
     {
-      title: "Warehouse Storage",
+      title: "Free Baggage Service",
       img: "/service4.jpg",
-      desc: "Secure warehouse facilities for long-term and short-term storage solutions.",
+      desc: "Send your extra baggage safely at affordable rates without airline restrictions.",
     },
     {
-      title: "Customs Clearance",
+      title: "Secured Document Delivery",
       img: "/service5.jpg",
-      desc: "Fast and reliable customs processing to ensure smooth cargo movement.",
-    },
-    {
-      title: "International Courier",
-      img: "/service6.jpg",
-      desc: "Door-to-door courier services with global delivery coverage.",
+      desc: "Confidential and time-sensitive documents delivered with maximum security and speed.",
     },
   ];
 
@@ -59,7 +54,6 @@ export default function Services() {
 
           {/* Orange Circle Arrows */}
           <div className="flex gap-4">
-            {/* LEFT ARROW */}
             <button
               onClick={slideLeft}
               className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-orange-500 text-orange-500 hover:bg-orange-100 transition"
@@ -76,7 +70,6 @@ export default function Services() {
               </svg>
             </button>
 
-            {/* RIGHT ARROW */}
             <button
               onClick={slideRight}
               className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-orange-500 text-orange-500 hover:bg-orange-100 transition"
@@ -123,7 +116,6 @@ export default function Services() {
           ))}
         </div>
 
-        {/* VIEW ALL */}
         <div className="flex justify-center mt-10">
           <button className="border border-orange-400 text-gray-900 rounded-full px-8 py-3 font-medium hover:bg-orange-50 transition font-outfit">
             View all
