@@ -25,3 +25,10 @@ body {
   font-family: 'Outfit', sans-serif;
 }
 
+.hero-cut {
+  clip-path: path("M0 0 H600 V80 C600 140 520 150 480 150 H0 Z");
+}
+
+.hero-shape {
+  clip-path: path("M0,0 H520 V140 C520,180 480,200 450,200 H0 Z");
+}
