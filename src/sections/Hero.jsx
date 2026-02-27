@@ -50,7 +50,7 @@ export default function Hero() {
             </div>
 
             {/* Responsive Font Sizes: text-5xl on mobile, text-8xl on desktop */}
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[0.95] lg:leading-[0.9] tracking-tighter text-slate-900 mb-6 lg:mb-8 uppercase">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-7xl font-black leading-[0.95] lg:leading-[0.9] tracking-tighter text-slate-900 mb-6 lg:mb-7 uppercase">
               International <br className="hidden sm:block" /> Courier<br />
               <span className="text-red-600">Perfected.</span>
             </h1>
@@ -70,7 +70,7 @@ export default function Hero() {
             </motion.button>
 
             {/* Responsive Stats Grid: 1 col on tiny phones, 2 on others */}
-            <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 lg:gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 lg:gap-6 py-12">
               {[
                 { label: "Door-to-door", icon: <CheckCircle2 size={16}/> },
                 { label: "Express & Economy", icon: <Zap size={16}/> },
