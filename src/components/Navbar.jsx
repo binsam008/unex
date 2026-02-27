@@ -17,7 +17,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handler);
   }, [isHome]);
 
-  const textColor = isHome && !scrolled ? "text-white" : "text-gray-900";
+  const textColor = isHome && !scrolled ? "text-slate-800" : "text-gray-900";
   const hoverColor = isHome && !scrolled ? "hover:text-orange-300" : "hover:text-orange-600";
 
   const bgClass =
@@ -47,7 +47,7 @@ export default function Navbar() {
             <p className={`flex items-center gap-1 ${hoverColor}`}>
               Support <ChevronDown size={16} />
             </p>
-            <div className="absolute mt-3 bg-white shadow-xl rounded-xl w-48 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+            <div className="absolute mt-3 bg-slate-800 shadow-xl rounded-xl w-48 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
               <DropdownLink to="/support/documents" label="Documents" />
               <DropdownLink to="/support/prohibited-items" label="Prohibited Items" />
             </div>

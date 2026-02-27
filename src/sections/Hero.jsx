@@ -1,238 +1,153 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ArrowRight,
-  ShieldCheck,
-  Globe,
-  Clock,
+import React from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { 
+  Globe, 
+  ArrowRight, 
+  Zap, 
+  CheckCircle2, 
+  FileText, 
+  Package, 
+  BarChart 
 } from "lucide-react";
 
-const ORANGE = "#f97316";
-
-const slides = [
-  {
-    id: "01",
-    title: "Logistics",
-    subtitle: "Global",
-    headline: "Global Courier & Logistics Without Complications",
-    subtext:
-      "We deliver documents, parcels, commercial shipments, and cargo worldwide — fast, safe, and fully tracked.",
-    highlights: [
-      "Door-to-door delivery",
-      "Express options",
-      "Real-time tracking",
-      "220+ countries",
-    ],
-    ctaText: "Ship Internationally",
-    image: "/hero1.jpg",
-    icon: () => <Globe className="w-5 h-5" />,
-  },
-  {
-    id: "02",
-    title: "Customs",
-    subtitle: "Expert",
-    headline: "We Manage Customs & Documentation",
-    subtext:
-      "From invoice preparation to clearance, we take care of the entire paperwork process professionally.",
-    highlights: [
-      "Export support",
-      "Customs clearance",
-      "IEC & KYC guidance",
-      "Commercial paperwork",
-    ],
-    ctaText: "Get Support",
-    image: "/hero2.jpg",
-    icon: () => <ShieldCheck className="w-5 h-5" />,
-  },
-  {
-    id: "03",
-    title: "Cargo",
-    subtitle: "Simple",
-    headline: "Personal Baggage & Import Cargo Made Simple",
-    subtext:
-      "Moving abroad? Returning home? Importing goods? We handle your baggage safely and legally.",
-    highlights: [
-      "Student baggage",
-      "Household relocation",
-      "Personal effects",
-      "Import handling",
-    ],
-    ctaText: "Request Quote",
-    image: "/hero3.jpg",
-    icon: () => <Clock className="w-5 h-5" />,
-  },
-];
-
-export default function HeroSlider() {
-  const [[page, direction], setPage] = useState([0, 0]);
-  const [isHovered, setIsHovered] = useState(false);
-
-  const current = ((page % slides.length) + slides.length) % slides.length;
-
-  const paginate = useCallback((dir) => {
-    setPage(([prev]) => [prev + dir, dir]);
-  }, []);
-
-  // Auto-play
-  useEffect(() => {
-    if (isHovered) return;
-
-    const timer = setInterval(() => {
-      paginate(1);
-    }, 6000);
-
-    return () => clearInterval(timer);
-  }, [paginate, isHovered]);
+export default function Hero() {
+  const { scrollYProgress } = useScroll();
+  const heroBgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const servicesBgY = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
 
   return (
-    <section
-      className="relative w-full h-[100dvh] flex flex-col justify-between bg-white overflow-hidden select-none"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 z-0">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={current}
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 1.2 }}
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${slides[current].image})` }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/40 to-transparent" />
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* HEADER */}
-      <header className="relative z-20 pt-8 px-6 md:pt-16 md:px-16 flex justify-between items-start w-full">
-        <div className="bg-white p-6 md:p-12 rounded-2xl md:rounded-[60px] shadow-2xl max-w-fit">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-[0.3em]">
-              Navigating
-            </span>
-            <div className="h-[1px] w-8 bg-gray-200" />
+    <section className="w-full bg-white font-['Outfit'] selection:bg-red-100 selection:text-red-600">
+      
+      {/* ================== STICKY HEADER ================== */}
+      {/* <header className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-6 md:px-16 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <img src="/logo.png" alt="UNEX" className="h-8" /> 
+            <nav className="hidden lg:flex items-center gap-6 text-[11px] font-bold uppercase tracking-widest text-slate-400">
+              {['Home', 'About', 'Services', 'Track', 'Contact', 'Support'].map((item) => (
+                <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-red-600 transition-colors">{item}</a>
+              ))}
+            </nav>
           </div>
-
-          <motion.div
-            key={current}
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex items-baseline gap-2 md:gap-4"
-          >
-            <h1 className="text-2xl md:text-6xl font-black uppercase tracking-tighter text-gray-900">
-              {slides[current].title}
-            </h1>
-            <span className="text-gray-300 font-light text-lg md:text-3xl italic">
-              for
-            </span>
-          </motion.div>
-
-          <motion.h2
-            key={`sub-${current}`}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-5xl sm:text-7xl md:text-[120px] font-black leading-[0.8] mt-1"
-            style={{ color: ORANGE }}
-          >
-            {slides[current].subtitle}
-          </motion.h2>
+          <button className="bg-[#FF6B00] text-white px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-orange-500/20">
+            Get a Quote
+          </button>
         </div>
+      </header> */}
 
-        <div className="hidden md:flex flex-col items-end text-white font-mono">
-          <span className="text-6xl font-black opacity-20">
-            {slides[current].id}
-          </span>
-          <div className="w-12 h-[2px] bg-orange-500 mt-2" />
-          <span className="text-sm tracking-widest mt-2 uppercase">
-            of 0{slides.length}
-          </span>
-        </div>
-      </header>
-
-      {/* MAIN CONTENT */}
-      <main className="relative z-20 px-6 md:px-16 flex flex-col md:flex-row justify-between items-end pb-12 md:pb-20 gap-8">
-        <AnimatePresence mode="wait">
+      {/* ================== HERO SECTION ================== */}
+      <div className="relative min-h-screen flex items-center overflow-hidden pt-15">
+        
+        {/* Background Image & World Map Overlay */}
+        <motion.div style={{ y: heroBgY }} className="absolute inset-0 z-0">
+          <img 
+            src="/hero1.jpg" 
+            alt="Logistics Background" 
+            className="w-full h-[120%] object-cover"
+          />
+          {/* World Map Texture (Optional: match screenshot) */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('/world-map.png')] bg-right bg-no-repeat bg-contain" />
+          
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-white/20" />
+        </motion.div>
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 w-full grid lg:grid-cols-2 gap-12 items-center">
+          
           <motion.div
-            key={current}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -40 }}
-            className="w-full md:max-w-md bg-white/10 backdrop-blur-2xl border border-white/20 p-6 md:p-10 rounded-[40px] text-white shadow-2xl"
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-orange-500 rounded-lg">
-                {slides[current].icon()}
-              </div>
-              <h3 className="text-xl md:text-2xl font-bold leading-tight">
-                {slides[current].headline}
-              </h3>
+            <div className="inline-flex items-center gap-3 px-4 py-2 bg-white border border-slate-100 shadow-sm rounded-lg mb-8">
+              <span className="flex h-2 w-2 rounded-full bg-red-600 animate-ping" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Global Operations Active</span>
             </div>
 
-            <p className="text-gray-200 text-sm md:text-base mb-8 leading-relaxed opacity-90">
-              {slides[current].subtext}
+            <h1 className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter text-slate-900 mb-8 uppercase">
+              International Courier<br />
+              <span className="text-red-600">Perfected.</span>
+            </h1>
+
+            <p className="text-slate-600 text-lg md:text-xl leading-relaxed mb-10 max-w-lg">
+              We deliver documents, parcels, commercial shipments, and cargo worldwide — 
+              <span className="text-slate-900 font-bold"> fast, safe, and fully tracked.</span>
             </p>
 
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {slides[current].highlights.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-2 text-xs md:text-sm font-medium"
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
-                  {item}
+            <motion.button 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="h-16 px-10 bg-[#050A18] text-white font-black uppercase tracking-widest hover:bg-red-600 transition-all flex items-center justify-center gap-3 group rounded-sm shadow-2xl mb-16"
+            >
+              Ship Internationally Today
+              <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+            </motion.button>
+
+            <div className="grid grid-cols-2 gap-6">
+              {[
+                { label: "Door-to-door", icon: <CheckCircle2 size={16}/> },
+                { label: "Express & Economy", icon: <Zap size={16}/> },
+                { label: "Real-time tracking", icon: <BarChart size={16}/> },
+                { label: "220+ Countries", icon: <Globe size={16}/> },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 text-slate-500 font-bold text-[11px] uppercase tracking-widest">
+                  <span className="text-red-600">{item.icon}</span>
+                  {item.label}
                 </div>
               ))}
             </div>
-
-            <button className="group relative w-full md:w-auto overflow-hidden bg-white text-black px-8 py-4 rounded-2xl font-bold transition-transform active:scale-95">
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                {slides[current].ctaText}
-                <ArrowRight
-                  size={18}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
-              </span>
-            </button>
           </motion.div>
-        </AnimatePresence>
+        </div>
+      </div>
 
-        {/* CONTROLS */}
-        <div className="flex flex-col items-center md:items-end gap-6 w-full md:w-auto">
-          <div className="flex gap-3">
-            <button
-              onClick={() => paginate(-1)}
-              className="w-14 h-14 rounded-full border border-white/30 text-white flex items-center justify-center hover:bg-orange-500 transition-all"
-            >
-              <ChevronLeft size={24} />
-            </button>
-            <button
-              onClick={() => paginate(1)}
-              className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center hover:bg-orange-500 hover:text-white transition-all"
-            >
-              <ChevronRight size={24} />
-            </button>
-          </div>
+      {/* ================== SERVICES SECTION ================== */}
+      <div className="relative bg-[#050A18] py-32 overflow-hidden">
+        <motion.div style={{ y: servicesBgY }} className="absolute inset-0 opacity-10 z-0">
+          <img src="/cargo-ship.jpg" className="w-full h-[120%] object-cover" />
+        </motion.div>
 
-          <div className="w-full md:w-64 h-1 bg-white/20 rounded-full overflow-hidden">
-            <motion.div
-              key={current}
-              initial={{ width: 0 }}
-              animate={{ width: "100%" }}
-              transition={{ duration: 6, ease: "linear" }}
-              className="h-full bg-orange-500"
-            />
+        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-16">
+          <div className="grid lg:grid-cols-2 gap-20 items-start">
+            <div className="sticky top-32">
+              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase mb-6 leading-none">
+                Beyond <br /> <span className="text-red-600">The Border.</span>
+              </h2>
+              <div className="h-2 w-20 bg-red-600 mb-8" />
+              <p className="text-slate-400 text-lg max-w-sm">
+                Managing global trade is complex. Our specialized divisions handle the regulatory burden.
+              </p>
+            </div>
+
+            <div className="space-y-12">
+              {[
+                { title: "Customs & Documentation", icon: <FileText size={32} />, list: ["Export Support", "Customs Clearance", "IEC & KYC", "Paperwork"] },
+                { title: "Personal Baggage", icon: <Package size={32} />, list: ["Student Shipping", "Relocation Cargo", "Effects Clearance", "Import Cargo"] }
+              ].map((service, index) => (
+                <motion.div 
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="group border-l-4 border-slate-800 hover:border-red-600 pl-8 transition-all bg-white/5 p-8 backdrop-blur-md"
+                >
+                  <div className="text-red-600 mb-6">{service.icon}</div>
+                  <h3 className="text-3xl font-black text-white uppercase mb-4 tracking-tight">{service.title}</h3>
+                  <div className="grid grid-cols-2 gap-3 mb-8">
+                    {service.list.map(li => (
+                      <div key={li} className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400">
+                        <CheckCircle2 size={12} className="text-red-600" /> {li}
+                      </div>
+                    ))}
+                  </div>
+                  <button className="text-white font-black uppercase text-xs tracking-widest group-hover:text-red-600 transition-colors flex items-center gap-2">
+                    Learn More <ArrowRight size={14} />
+                  </button>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
-      </main>
-
-      <div className="absolute bottom-0 right-0 w-32 h-32 bg-white rounded-tl-[100px] z-10 hidden lg:block" />
+      </div>
     </section>
   );
 }
