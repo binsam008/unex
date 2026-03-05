@@ -1,17 +1,146 @@
 @import "tailwindcss";
-/* HIDE SCROLLBAR for Chrome, Safari, Edge */
+
+/* =================================
+GLOBAL STYLES
+================================= */
+
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* =================================
+HERO SECTION CLIP
+================================= */
+
+.hero-right-clip {
+  clip-path: polygon(
+    15% 0%,
+    100% 0%,
+    100% 100%,
+    0% 100%
+  );
+}
+
+.hero-stroke-clip {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: white;
+
+  clip-path: polygon(
+    13% 0%,
+    15% 0%,
+    2% 100%,
+    0% 100%
+  );
+}
+
+
+/* =================================
+DOCUMENTATION SECTION
+PARALLEL DIAGONAL CUT
+================================= */
+
+.doc-left-clip {
+  position: relative;
+  overflow: hidden;
+
+  clip-path: polygon(
+    0% 0%,
+    90% 0%,
+    80% 100%,
+    0% 100%
+  );
+}
+
+.doc-right-clip {
+  position: relative;
+  overflow: hidden;
+
+  /* overlap to align diagonals */
+  margin-left: -120px;
+
+  background: rgba(255,255,255,0.95);
+
+  clip-path: polygon(
+    10% 0%,
+    100% 0%,
+    100% 100%,
+    0% 100%
+  );
+}
+
+
+/* CENTER WHITE DIVIDER */
+
+.doc-center-stroke {
+  position: absolute;
+
+  top: 0;
+  bottom: 0;
+
+  left: 49%;
+
+  width: 11px;
+
+  background: white;
+
+  transform: skewX(-12deg);
+
+  z-index: 70;
+}
+
+
+/* IMAGE DARK OVERLAY */
+
+.doc-left-clip img {
+  filter: brightness(0.75);
+}
+
+
+/* =================================
+SLIDER FIX
+================================= */
+
+.section-two-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.section-two-slider {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+/* =================================
+SCROLLBAR REMOVE
+================================= */
+
 .no-scrollbar::-webkit-scrollbar {
   display: none !important;
 }
 
-/* HIDE SCROLLBAR for Firefox */
 .no-scrollbar {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
+
+
+/* =================================
+MARQUEE ANIMATION
+================================= */
+
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .animate-marquee {
@@ -21,14 +150,35 @@
   animation: marquee 25s linear infinite;
   will-change: transform;
 }
-body {
-  font-family: 'Outfit', sans-serif;
+
+
+/* =================================
+PERFORMANCE FIX
+================================= */
+
+img {
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
-.hero-cut {
-  clip-path: path("M0 0 H600 V80 C600 140 520 150 480 150 H0 Z");
-}
 
-.hero-shape {
-  clip-path: path("M0,0 H520 V140 C520,180 480,200 450,200 H0 Z");
+/* =================================
+RESPONSIVE RESET
+================================= */
+
+@media (max-width: 1024px) {
+
+  .hero-right-clip,
+  .hero-stroke-clip,
+  .doc-left-clip,
+  .doc-right-clip,
+  .doc-center-stroke {
+
+    clip-path: none !important;
+    transform: none !important;
+    margin-left: 0 !important;
+    position: relative !important;
+
+  }
+
 }

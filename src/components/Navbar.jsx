@@ -10,20 +10,15 @@ export default function Navbar() {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
 
-  /* SCROLL EFFECT */
+  // Scroll navbar behavior
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40);
     if (isHome) window.addEventListener("scroll", handler);
     return () => window.removeEventListener("scroll", handler);
   }, [isHome]);
 
-  const textColor = isHome && !scrolled ? "text-slate-800" : "text-gray-900";
-  const hoverColor = isHome && !scrolled ? "hover:text-orange-300" : "hover:text-orange-600";
-
   const bgClass =
-    isHome && !scrolled
-      ? "bg-transparent"
-      : "bg-white/90 backdrop-blur-xl shadow-md";
+    isHome && !scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-xl shadow-sm";
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${bgClass}`}>
@@ -31,39 +26,45 @@ export default function Navbar() {
 
         {/* LOGO */}
         <Link to="/" className="flex items-center">
-          <img src="/logo.png" className="h-16 w-auto" />
+          <img src="/logo.png" className="h-16 w-auto select-none" />
         </Link>
 
         {/* DESKTOP MENU */}
-        <div className={`hidden md:flex items-center gap-10 text-sm font-semibold ${textColor}`}>
-          <NavItem to="/" label="Home" hoverColor={hoverColor} />
-          <NavItem to="/about" label="About" hoverColor={hoverColor} />
-          <NavItem to="/services" label="Services" hoverColor={hoverColor} />
-          <NavItem to="/track" label="Track" hoverColor={hoverColor} />
-          <NavItem to="/contact" label="Contact" hoverColor={hoverColor} />
+        <div className="hidden md:flex items-center gap-10 text-[15px] font-semibold text-gray-900">
+          
+          <NavItem to="/" label="Home" />
+          <NavItem to="/about" label="About" />
+          <NavItem to="/services" label="Services" />
+          <NavItem to="/track" label="Track Shipment" />
+          <NavItem to="/contact" label="Contact" />
 
           {/* DROPDOWN */}
           <div className="relative group cursor-pointer">
-            <p className={`flex items-center gap-1 ${hoverColor}`}>
+            <p className="flex items-center gap-1 hover:text-orange-600 transition">
               Support <ChevronDown size={16} />
             </p>
-            <div className="absolute mt-3 bg-slate-800 shadow-xl rounded-xl w-48 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+
+            <div className="absolute mt-3 bg-white shadow-xl rounded-xl w-48 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
               <DropdownLink to="/support/documents" label="Documents" />
               <DropdownLink to="/support/prohibited-items" label="Prohibited Items" />
             </div>
           </div>
 
-          {/* CTA */}
+          {/* CTA BUTTON */}
           <Link
             to="/quote"
-            className="bg-orange-500 text-white px-6 py-2 rounded-full hover:bg-orange-600 shadow-md"
+            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition shadow-md"
           >
             Get a Quote
           </Link>
+
         </div>
 
-        {/* MOBILE BUTTON */}
-        <button className={`md:hidden ${textColor}`} onClick={() => setOpenMenu(!openMenu)}>
+        {/* MOBILE MENU ICON */}
+        <button
+          className="md:hidden text-gray-900"
+          onClick={() => setOpenMenu(!openMenu)}
+        >
           {openMenu ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
@@ -71,13 +72,14 @@ export default function Navbar() {
       {/* MOBILE MENU */}
       {openMenu && (
         <div className="md:hidden bg-white shadow-xl px-6 py-4 space-y-4">
+          
           <MobileLink to="/" label="Home" close={() => setOpenMenu(false)} />
           <MobileLink to="/about" label="About" close={() => setOpenMenu(false)} />
           <MobileLink to="/services" label="Services" close={() => setOpenMenu(false)} />
-          <MobileLink to="/track" label="Track" close={() => setOpenMenu(false)} />
+          <MobileLink to="/track" label="Track Shipment" close={() => setOpenMenu(false)} />
           <MobileLink to="/contact" label="Contact" close={() => setOpenMenu(false)} />
 
-          {/* MOBILE DROPDOWN */}
+          {/* SUPPORT DROPDOWN (MOBILE) */}
           <div>
             <button
               onClick={() => setOpenSupport(!openSupport)}
@@ -98,7 +100,7 @@ export default function Navbar() {
           {/* CTA */}
           <Link
             to="/quote"
-            className="block bg-orange-500 text-white text-center py-2 rounded-full font-semibold"
+            className="block bg-red-600 text-white text-center py-2 rounded-lg font-semibold hover:bg-red-700 transition"
           >
             Get a Quote
           </Link>
@@ -110,21 +112,19 @@ export default function Navbar() {
 
 /********* SUB COMPONENTS *********/
 
-function NavItem({ to, label, hoverColor }) {
+function NavItem({ to, label }) {
   return (
-    <Link
-      to={to}
-      className={`relative ${hoverColor}`}
-    >
+    <Link to={to} className="relative group hover:text-orange-600 transition">
       {label}
-      <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-orange-500 transition-all duration-300 group-hover:w-full" />
+      {/* underline */}
+      <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-orange-600 transition-all duration-300 group-hover:w-full"></span>
     </Link>
   );
 }
 
 function DropdownLink({ to, label }) {
   return (
-    <Link to={to} className="block px-4 py-2 rounded-lg hover:bg-orange-50 hover:text-orange-600">
+    <Link to={to} className="block px-4 py-2 rounded-lg hover:bg-orange-50 hover:text-orange-600 transition">
       {label}
     </Link>
   );
