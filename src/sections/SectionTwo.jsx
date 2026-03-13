@@ -46,6 +46,7 @@ export default function SectionTwo() {
           {/* BACKGROUND IMAGE */}
           <div className="absolute inset-0 z-0">
             <img src="/hero3.jpg" className="w-full h-full object-cover"/>
+            
           </div>
 
 
@@ -92,7 +93,7 @@ export default function SectionTwo() {
             initial={{opacity:0,x:70}}
             whileInView={{opacity:1,x:0}}
             transition={{duration:1.2}}
-            className="doc-right-clip relative flex-[1.0] bg-white/75 p-12 z-20 text-[#0b1a33]"
+            className="doc-right-clip relative flex-[1.0] bg-white/65 p-12 z-20 text-[#0b1a33]"
           >
 
             <div className="relative z-30 w-[85%] ml-auto">

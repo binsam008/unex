@@ -18,7 +18,7 @@ export default function Navbar() {
   }, [isHome]);
 
   const bgClass =
-    isHome && !scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-xl shadow-sm";
+    isHome && !scrolled ? "bg-white/40  backdrop-blur-xl" : "bg-transparent ";
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${bgClass}`}>
@@ -30,7 +30,7 @@ export default function Navbar() {
         </Link>
 
         {/* DESKTOP MENU */}
-        <div className="hidden md:flex items-center gap-10 text-[15px] font-semibold text-gray-900">
+        <div className="hidden md:flex items-center gap-10 text-[15px] font-semibold text-black">
           
           <NavItem to="/" label="Home" />
           <NavItem to="/about" label="About" />

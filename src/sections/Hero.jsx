@@ -2,49 +2,43 @@ import { motion } from "framer-motion";
 
 export default function Hero() {
   return (
-    <section className="relative w-full h-[70vh] flex items-center overflow-hidden bg-[#0b1a33]">
-      
-      {/* Background Layer */}
+    <section className="relative w-full h-[75vh] md:h-[70vh] flex items-center overflow-hidden bg-[#0b1a33]">
+
+      {/* BACKGROUND IMAGE */}
       <div className="absolute inset-0 z-0">
-        <img src="/hero1.jpg" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/20"></div>
+        <img
+          src="/hero1.jpg"
+          className="w-full h-full object-cover"
+        />
+
+        {/* DARK GRADIENT FOR READABILITY */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
       </div>
 
-      {/* LEFT TEXT */}
+      {/* TEXT CONTENT */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-        className="container mx-auto md:px-20 relative z-20 text-white"
+        transition={{ duration: 1.2 }}
+        className="relative z-20 w-full px-6 md:px-20 text-white text-center md:text-left"
       >
-        <h1 className="text-4xl md:text-4xl font-black drop-shadow-lg">
-          Global Courier & Logistics <br /> Without Complications
+
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-black leading-tight drop-shadow-lg">
+          Global Courier & Logistics <br className="hidden md:block"/>
+          Without Complications
         </h1>
 
-        <p className="mt-6 text-lg max-w-xl font-medium">
-          Door-to-door international delivery,  
-          Express time tracking – Reliable & economy tracking
+        <p className="mt-4 md:mt-6 text-sm md:text-lg max-w-xl mx-auto md:mx-0 font-medium text-white/90">
+          Door-to-door international delivery with express time tracking.
+          Reliable, secure and cost-effective shipping worldwide.
         </p>
 
-        <button className="mt-8 bg-[#e31e24] text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg">
+        <button className="mt-6 md:mt-8 bg-[#e31e24] hover:bg-red-700 transition px-6 py-3 md:px-8 md:py-4 rounded-lg md:rounded-xl font-bold text-sm md:text-lg shadow-lg">
           Ship Internationally Today
         </button>
+
       </motion.div>
 
-      {/* RIGHT IMAGE WITH STROKE */}
-      <div className="hidden md:block absolute right-0 top-0 h-full w-[45%] z-10">
-        <div className="absolute inset-0 bg-white hero-stroke-clip z-20"></div>
-
-        <div className="w-full h-full hero-right-clip relative">
-          <motion.img
-            src="/hero.png"
-            className="w-full h-full object-cover"
-            initial={{ opacity: 0, x: 80 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.4, ease: "easeOut" }}
-          />
-        </div>
-      </div>
     </section>
   );
 }
