@@ -5,32 +5,20 @@ import { Menu, X, ChevronDown } from "lucide-react";
 export default function Navbar() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openSupport, setOpenSupport] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
   const { pathname } = useLocation();
-  const isHome = pathname === "/";
-
-  // Scroll navbar behavior
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 40);
-    if (isHome) window.addEventListener("scroll", handler);
-    return () => window.removeEventListener("scroll", handler);
-  }, [isHome]);
-
-  const bgClass =
-    isHome && !scrolled ? "bg-white/40  backdrop-blur-xl" : "bg-transparent ";
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${bgClass}`}>
+    <nav className="fixed top-0 w-full z-50 bg-white transition-all duration-300">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
         {/* LOGO */}
         <Link to="/" className="flex items-center">
-          <img src="/logo.png" className="h-16 w-auto select-none" />
+          <img src="/logo.png" alt="Logo" className="h-16 w-auto select-none" />
         </Link>
 
         {/* DESKTOP MENU */}
-        <div className="hidden md:flex items-center gap-10 text-[15px] font-semibold text-black">
+        <div className="hidden md:flex items-center gap-10 text-[15px] font-semibold text-gray-800">
           
           <NavItem to="/" label="Home" />
           <NavItem to="/about" label="About" />
@@ -40,11 +28,11 @@ export default function Navbar() {
 
           {/* DROPDOWN */}
           <div className="relative group cursor-pointer">
-            <p className="flex items-center gap-1 hover:text-orange-600 transition">
+            <p className="flex items-center gap-1 hover:text-orange-600 transition text-gray-800">
               Support <ChevronDown size={16} />
             </p>
 
-            <div className="absolute mt-3 bg-white shadow-xl rounded-xl w-48 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+            <div className="absolute mt-3 bg-white border border-gray-100 rounded-xl w-48 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
               <DropdownLink to="/support/documents" label="Documents" />
               <DropdownLink to="/support/prohibited-items" label="Prohibited Items" />
             </div>
@@ -53,7 +41,7 @@ export default function Navbar() {
           {/* CTA BUTTON */}
           <Link
             to="/quote"
-            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition shadow-md"
+            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
           >
             Get a Quote
           </Link>
@@ -62,7 +50,7 @@ export default function Navbar() {
 
         {/* MOBILE MENU ICON */}
         <button
-          className="md:hidden text-gray-900"
+          className="md:hidden text-gray-800"
           onClick={() => setOpenMenu(!openMenu)}
         >
           {openMenu ? <X size={28} /> : <Menu size={28} />}
@@ -71,7 +59,7 @@ export default function Navbar() {
 
       {/* MOBILE MENU */}
       {openMenu && (
-        <div className="md:hidden bg-white shadow-xl px-6 py-4 space-y-4">
+        <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 space-y-4">
           
           <MobileLink to="/" label="Home" close={() => setOpenMenu(false)} />
           <MobileLink to="/about" label="About" close={() => setOpenMenu(false)} />
@@ -83,7 +71,7 @@ export default function Navbar() {
           <div>
             <button
               onClick={() => setOpenSupport(!openSupport)}
-              className="flex justify-between w-full font-semibold py-2"
+              className="flex justify-between w-full font-semibold py-2 text-gray-800"
             >
               Support
               <ChevronDown size={18} className={`${openSupport ? "rotate-180" : ""} transition`} />
@@ -100,6 +88,7 @@ export default function Navbar() {
           {/* CTA */}
           <Link
             to="/quote"
+            onClick={() => setOpenMenu(false)}
             className="block bg-red-600 text-white text-center py-2 rounded-lg font-semibold hover:bg-red-700 transition"
           >
             Get a Quote
@@ -124,7 +113,7 @@ function NavItem({ to, label }) {
 
 function DropdownLink({ to, label }) {
   return (
-    <Link to={to} className="block px-4 py-2 rounded-lg hover:bg-orange-50 hover:text-orange-600 transition">
+    <Link to={to} className="block px-4 py-2 rounded-lg text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition">
       {label}
     </Link>
   );
@@ -132,7 +121,7 @@ function DropdownLink({ to, label }) {
 
 function MobileLink({ to, label, close }) {
   return (
-    <Link to={to} onClick={close} className="block py-2 text-gray-900 hover:text-orange-600">
+    <Link to={to} onClick={close} className="block py-2 text-gray-800 hover:text-orange-600">
       {label}
     </Link>
   );

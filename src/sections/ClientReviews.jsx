@@ -27,7 +27,7 @@ export default function ClientReviews() {
       <div className="max-w-8xl mx-auto">
 
         {/* Title */}
-        <h2 className="text-3xl font-bold text-[#0A2A63] mb-10">
+        <h2 className="text-4xl font-extrabold text-orange-300 mb-10">
           CLIENT REVIEWS
         </h2>
 

@@ -81,10 +81,10 @@ export default function ContactOffices() {
               </div>
 
               {/* Email */}
-              <div className="flex items-start gap-3">
+              {/* <div className="flex items-start gap-3">
                 <Mail className="text-blue-600 mt-1" size={20} />
                 <p>{b.email}</p>
-              </div>
+              </div> */}
 
               {/* Phone */}
               <div className="flex items-start gap-3">
