@@ -49,7 +49,7 @@ export default function Documents() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-10 pt-32">
+    <div className="min-h-screen bg-gray-50 p-6 md:p-10">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -57,11 +57,11 @@ export default function Documents() {
       >
         
         {/* Header Section */}
-        <div className="mb-9">
+        <div className="pt-10 pb-6">
           {/* <span className="text-orange-600 font-bold tracking-widest uppercase text-sm mb-3 block">
             Resources & Compliance
           </span> */}
-          <h1 className="text-3xl md:text-3xl font-black text-gray-900 leading-tight uppercase font-outfit">
+          <h1 className="text-3xl md:text-3xl font-black text-gray-900 leading-tight uppercase font-outfit ">
             Required <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">
               Import & Export Documents
