@@ -53,16 +53,21 @@ export default function About() {
           </motion.div>
 
           {/* RIGHT TEXT */}
-          <motion.div variants={itemVariants}>
-            <p className="text-gray-700 leading-relaxed text-lg md:text-[22px] text-justify font-outfit">
-              We Deliver, Track & Ship is a comprehensive logistics and
-              transportation provider dedicated to delivering seamless, 
-              reliable solutions for businesses and individuals. From initial 
-              order placement to final delivery, we manage every stage of the 
-              supply chain with precision, powered by advanced tracking 
-              technology and a customer-first approach.
-            </p>
-          </motion.div>
+  {/* RIGHT TEXT */}
+<motion.div variants={itemVariants}>
+<p 
+  lang="en" 
+  className="text-gray-700 leading-relaxed text-lg md:text-[25px] font-outfit text-justify hyphens-auto"
+  style={{ hyphens: 'auto' }}
+>
+  We Deliver, Track & Ship is a comprehensive logistics and
+  transportation provider dedicated to delivering seamless, 
+  reliable solutions for businesses and individuals. From initial 
+  order placement to final delivery, we manage every stage of the 
+  supply chain with precision, powered by advanced tracking 
+  technology and a customer-first approach.
+</p>
+</motion.div>
         </div>
 
         {/* STATS SECTION */}
