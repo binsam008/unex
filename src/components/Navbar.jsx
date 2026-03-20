@@ -14,7 +14,7 @@ export default function Navbar() {
 
         {/* LOGO */}
         <Link to="/" className="flex items-center">
-          <img src="/logo.png" alt="Logo" className="h-16 w-auto select-none" />
+          <img src="/logo.png" alt="Logo" className="h-20 w-auto select-none" />
         </Link>
 
         {/* DESKTOP MENU */}

@@ -78,9 +78,9 @@ export default function WhyChooseUs() {
           <motion.span 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            className="bg-white/20 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest"
+            className="bg-white/0 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest"
           >
-            Efficiency Redefined
+            
           </motion.span>
           <h2 className="text-5xl md:text-7xl font-black leading-tight font-outfit uppercase">
             WHY <br /> 

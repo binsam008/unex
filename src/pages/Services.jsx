@@ -1,4 +1,6 @@
 import { useState } from "react";
+// Import Link from react-router-dom for Vite/CRA projects
+import { Link } from "react-router-dom"; 
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Truck, 
@@ -11,6 +13,7 @@ import {
   Headphones, 
   BoxSelect 
 } from "lucide-react";
+
 const servicesData = [
   { 
     id: 1, 
@@ -26,7 +29,7 @@ const servicesData = [
     icon: <PackageCheck size={24} />, 
     headline: "Professional Secure Packaging",
     desc: "Expert packing using industrial-grade materials.",
-    image: "/images/free-packing.jpg"
+    image: "/images/free.png"
   },
   { 
     id: 3, 
@@ -88,7 +91,6 @@ const servicesData = [
 
 export default function ServicesTabs() {
   const [activeId, setActiveId] = useState(servicesData[0].id);
-
   const currentService = servicesData.find(s => s.id === activeId);
 
   return (
@@ -167,12 +169,17 @@ export default function ServicesTabs() {
                 {currentService.desc}
               </p>
               <div className="flex flex-wrap gap-4">
-                <button className="bg-[#ff3c00] text-white px-8 py-3 rounded-xl font-bold hover:bg-orange-500 transition-all shadow-md active:scale-95">
-                  Book Now
-                </button>
-                <button className="border border-gray-300 text-gray-700 px-8 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all">
-                  Contact Support
-                </button>
+                {/* Updated to use Link for routing */}
+                <Link to="/quote">
+                  <button className="bg-[#ff3c00] text-white px-8 py-3 rounded-xl font-bold hover:bg-orange-500 transition-all shadow-md active:scale-95">
+                    Book Now
+                  </button>
+                </Link>
+                <Link to="/contact">
+                  <button className="border border-gray-300 text-gray-700 px-8 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all">
+                    Contact Support
+                  </button>
+                </Link>
               </div>
             </div>
           </motion.div>
@@ -182,12 +189,12 @@ export default function ServicesTabs() {
         <div className="mt-16 text-center bg-[#021a31] p-10 rounded-3xl text-white">
           <h3 className="text-2xl font-bold mb-2">Need a custom logistics plan?</h3>
           <p className="opacity-80 mb-6">Our experts are ready to help you optimize your supply chain.</p>
-          <a 
-            href="https://wa.me/" 
+          <Link 
+            to="/contact" 
             className="inline-block bg-orange-500 text-white px-10 py-4 rounded-xl font-bold hover:bg-orange-600 transition-all"
           >
             Chat with an Expert
-          </a>
+          </Link>
         </div>
       </div>
     </div>

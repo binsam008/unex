@@ -1,19 +1,32 @@
+"use client";
 import { useState, useEffect } from "react";
 import {
   collection,
   getDocs,
   deleteDoc,
   doc,
-  setDoc
+  setDoc,
+  getDoc
 } from "firebase/firestore";
 import { db } from "../firebase";
 import emailjs from "@emailjs/browser";
+
+/* ✅ SIMPLE TRACKING STEPS */
+const trackingSteps = [
+  "Shipment Information Received",
+  "Picked Up",
+  "Handover To Airline",
+  "Arrived Hub",
+  "Custom Clearance In Progress",
+  "Out For Delivery",
+  "Delivered"
+];
 
 export default function AdminDashboard() {
 
   const [shipments, setShipments] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [previousStatus, setPreviousStatus] = useState(null);
+  const [previousStep, setPreviousStep] = useState(null);
 
   const [formData, setFormData] = useState({
     invoice: "",
@@ -24,25 +37,13 @@ export default function AdminDashboard() {
     shipmentType: "FCL",
     origin: "",
     destination: "",
-    status: "DOCUMENT RECEIVED",
+    currentStep: 0,
     currentLocation: "",
-    lastUpdated: ""
+    lastUpdated: "",
+    history: []
   });
 
-  const statusOptions = [
-    "DOCUMENT RECEIVED",
-    "DOCUMENT PROCESSING",
-    "APPROVALS PENDING",
-    "APPROVALS PAYMENT DONE",
-    "CDF PREPARED",
-    "UNDER CLEARANCE DOCUMENTATION",
-    "CDF PAYMENT PENDING",
-    "DUTY & VAT PAYMENT DONE",
-    "UNDER CLEARANCE",
-    "CLEARANCE COMPLETED",
-    "DELIVERED AT PLACE"
-  ];
-
+  /* ✅ FETCH */
   const fetchShipments = async () => {
     const querySnapshot = await getDocs(collection(db, "shipments"));
     const data = querySnapshot.docs.map(doc => ({
@@ -56,27 +57,48 @@ export default function AdminDashboard() {
     fetchShipments();
   }, []);
 
+  /* ✅ SAVE / UPDATE */
   const handleSubmit = async () => {
     try {
-      const cleanData = {
-        ...formData,
-        logisticsType: formData.logisticsType || "Sea",
-        shipmentType: formData.shipmentType || "FCL",
-        status: formData.status || "DOCUMENT RECEIVED"
+      const docRef = doc(db, "shipments", formData.invoice);
+      const existingDoc = await getDoc(docRef);
+
+      let updatedHistory = [];
+
+      if (existingDoc.exists()) {
+        updatedHistory = existingDoc.data().history || [];
+      }
+
+      const newEntry = {
+        step: trackingSteps[formData.currentStep],
+        location: formData.currentLocation,
+        date: formData.lastUpdated
       };
 
-      await setDoc(doc(db, "shipments", formData.invoice), cleanData);
+      // ✅ Only add new history if step changed
+      if (!isEditing || previousStep !== formData.currentStep) {
+        updatedHistory.push(newEntry);
+      }
 
-      if (isEditing && previousStatus !== formData.status) {
+      const cleanData = {
+        ...formData,
+        currentStep: formData.currentStep,
+        history: updatedHistory
+      };
+
+      await setDoc(docRef, cleanData);
+
+      /* ✅ EMAILJS SEND */
+      if (!isEditing || previousStep !== formData.currentStep) {
         const params = {
           customer_name: formData.customerName,
           invoice: formData.invoice,
-          status: formData.status,
+          status: trackingSteps[formData.currentStep],
           location: formData.currentLocation,
           to_email: formData.email
         };
 
-        emailjs.send(
+        await emailjs.send(
           "service_t60r5r6",
           "template_1hwc68h",
           params,
@@ -84,20 +106,21 @@ export default function AdminDashboard() {
         );
       }
 
-      alert(isEditing ? "Job Updated Successfully" : "Job Created Successfully");
+      alert(isEditing ? "Shipment Updated Successfully" : "Shipment Created Successfully");
 
       resetForm();
       fetchShipments();
 
     } catch (error) {
       console.error(error);
-      alert("Error saving job");
+      alert("Error saving shipment");
     }
   };
 
+  /* ✅ RESET */
   const resetForm = () => {
     setIsEditing(false);
-    setPreviousStatus(null);
+    setPreviousStep(null);
     setFormData({
       invoice: "",
       customerName: "",
@@ -107,17 +130,20 @@ export default function AdminDashboard() {
       shipmentType: "FCL",
       origin: "",
       destination: "",
-      status: "DOCUMENT RECEIVED",
+      currentStep: 0,
       currentLocation: "",
-      lastUpdated: ""
+      lastUpdated: "",
+      history: []
     });
   };
 
+  /* ✅ DELETE */
   const handleDelete = async (id) => {
     await deleteDoc(doc(db, "shipments", id));
     fetchShipments();
   };
 
+  /* ✅ EDIT */
   const handleEdit = (ship) => {
     setFormData({
       invoice: ship.id,
@@ -128,30 +154,40 @@ export default function AdminDashboard() {
       shipmentType: ship.shipmentType,
       origin: ship.origin,
       destination: ship.destination,
-      status: ship.status,
+      currentStep: ship.currentStep,
       currentLocation: ship.currentLocation,
-      lastUpdated: ship.lastUpdated
+      lastUpdated: ship.lastUpdated,
+      history: ship.history || []
     });
 
-    setPreviousStatus(ship.status);
+    setPreviousStep(ship.currentStep);
     setIsEditing(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  return (
-    <div className="min-h-screen bg-[#F1F5F9] p-8 font-outfit py-25">
+  /* ✅ NEXT STEP BUTTON */
+  const nextStep = () => {
+    if (formData.currentStep < trackingSteps.length - 1) {
+      setFormData({
+        ...formData,
+        currentStep: formData.currentStep + 1
+      });
+    }
+  };
 
-      {/* MAIN FORM PANEL */}
-      <div className="bg-white shadow-xl rounded-2xl p-10 max-w-5xl mx-auto border border-gray-200">
+  return (
+    <div className="min-h-screen bg-[#F1F5F9] p-8 font-outfit py-24">
+
+      {/* FORM */}
+      <div className="bg-white shadow-xl rounded-2xl p-10 max-w-5xl mx-auto border">
 
         <h1 className="text-3xl font-bold mb-10 text-[#0A1D45]">
-          UNEX Job Management
+          Shipment Management
         </h1>
 
-        {/* FORM GRID */}
         <div className="grid md:grid-cols-2 gap-6">
 
-          <FormInput label="Job Number" disabled={isEditing}
+          <FormInput label="Invoice Number" disabled={isEditing}
             value={formData.invoice}
             onChange={(e) => setFormData({ ...formData, invoice: e.target.value })}
           />
@@ -166,20 +202,20 @@ export default function AdminDashboard() {
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
 
-          <FormInput label="Phone (+91...)"
+          <FormInput label="Phone"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           />
 
-          <FormSelect label="Logistics Type" value={formData.logisticsType}
+          {/* <FormSelect label="Logistics Type" value={formData.logisticsType}
             options={["Sea", "Air", "Road"]}
             onChange={(e) => setFormData({ ...formData, logisticsType: e.target.value })}
-          />
+          /> */}
 
-          <FormSelect label="Shipment Type" value={formData.shipmentType}
+          {/* <FormSelect label="Shipment Type" value={formData.shipmentType}
             options={["FCL", "LCL"]}
             onChange={(e) => setFormData({ ...formData, shipmentType: e.target.value })}
-          />
+          /> */}
 
           <FormInput label="Origin"
             value={formData.origin}
@@ -191,9 +227,18 @@ export default function AdminDashboard() {
             onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
           />
 
-          <FormSelect full label="Shipment Status" value={formData.status}
-            options={statusOptions}
-            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+          {/* ✅ STEP SELECT */}
+          <FormSelect
+            full
+            label="Tracking Step"
+            value={formData.currentStep}
+            options={trackingSteps.map((step, i) => ({
+              label: step,
+              value: i
+            }))}
+            onChange={(e) =>
+              setFormData({ ...formData, currentStep: Number(e.target.value) })
+            }
           />
 
           <FormInput label="Last Updated" type="date"
@@ -208,43 +253,56 @@ export default function AdminDashboard() {
 
         </div>
 
-        {/* SAVE BUTTON */}
-        <button
-          onClick={handleSubmit}
-          className="mt-10 w-full py-4 text-white text-lg font-semibold rounded-xl bg-gradient-to-r from-orange-500 to-orange-400 shadow-lg hover:opacity-90"
-        >
-          {isEditing ? "Update Job" : "Save Job"}
-        </button>
+        {/* BUTTONS */}
+        <div className="flex gap-4 mt-10">
+
+          <button
+            onClick={handleSubmit}
+            className="flex-1 py-4 text-white text-lg font-semibold rounded-xl bg-gradient-to-r from-orange-500 to-orange-400"
+          >
+            {isEditing ? "Update Shipment" : "Save Shipment"}
+          </button>
+
+          <button
+            onClick={nextStep}
+            className="flex-1 py-4 text-white text-lg font-semibold rounded-xl bg-blue-600"
+          >
+            Next Step →
+          </button>
+
+        </div>
 
       </div>
 
-      {/* JOB LIST */}
+      {/* LIST */}
       <div className="max-w-5xl mx-auto mt-12">
 
-        <h2 className="text-2xl font-bold mb-4 text-[#0A1D45]">All Jobs</h2>
+        <h2 className="text-2xl font-bold mb-4 text-[#0A1D45]">All Shipments</h2>
 
         <div className="space-y-4">
           {shipments.map((ship) => (
             <div key={ship.id}
-              className="bg-white p-5 rounded-xl shadow flex justify-between items-center border border-gray-200 hover:shadow-lg transition"
+              className="bg-white p-5 rounded-xl shadow flex justify-between items-center border hover:shadow-lg transition"
             >
               <div>
                 <p className="font-semibold text-[#0A1D45]">{ship.id}</p>
                 <p>{ship.customerName}</p>
-                <p className="text-sm text-gray-500">{ship.status}</p>
+                <p className="text-sm text-gray-500">
+                  {trackingSteps[ship.currentStep]}
+                </p>
               </div>
 
               <div className="flex gap-3">
                 <button
                   onClick={() => handleEdit(ship)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg"
                 >
                   Edit
                 </button>
 
                 <button
                   onClick={() => handleDelete(ship.id)}
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-500"
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg"
                 >
                   Delete
                 </button>
@@ -254,6 +312,7 @@ export default function AdminDashboard() {
           ))}
         </div>
       </div>
+
     </div>
   );
 }
@@ -282,7 +341,9 @@ function FormSelect({ label, options, full, ...props }) {
         {...props}
       >
         {options.map((op, i) => (
-          <option key={i}>{op}</option>
+          <option key={i} value={op.value}>
+            {op.label}
+          </option>
         ))}
       </select>
     </div>
