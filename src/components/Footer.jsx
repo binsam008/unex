@@ -33,7 +33,7 @@ export default function Footer() {
             </p>
             <div className="flex gap-3">
               {[Instagram, Facebook, Linkedin].map((Icon, i) => (
-                <a key={i} href="#" className="text-slate-400 hover:text-orange-500 transition-colors">
+                <a key={i} href="#" className="text-slate-400 hover:text-red-600 transition-colors">
                   <Icon size={18} />
                 </a>
               ))}
@@ -42,7 +42,7 @@ export default function Footer() {
 
           {/* Quick Links - Compact */}
           <div>
-            <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-orange-600">Quick Links</h4>
+            <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-red-600">Quick Links</h4>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.name}>
@@ -56,7 +56,7 @@ export default function Footer() {
 
           {/* Services - Compact */}
           <div>
-            <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-orange-600">Services</h4>
+            <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-red-600">Services</h4>
             <ul className="space-y-2">
               {services.map((service) => (
                 <li key={service}>
@@ -70,18 +70,18 @@ export default function Footer() {
 
           {/* Contact - Compact */}
           <div>
-            <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-orange-600">Contact</h4>
+            <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-red-600">Contact</h4>
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-slate-500 text-sm">
-                <Phone size={14} className="text-orange-500" />
+                <Phone size={14} className="text-red-600" />
                 <span>+1 234 567-890</span>
               </li>
               <li className="flex items-center gap-2 text-slate-500 text-sm">
-                <Mail size={14} className="text-orange-500" />
+                <Mail size={14} className="text-red-600" />
                 <span>support@unex.com</span>
               </li>
               <li className="flex items-center gap-2 text-slate-500 text-sm">
-                <MapPin size={14} className="text-orange-500" />
+                <MapPin size={14} className="text-red-600" />
                 <span className="truncate">Global Hub, Business Dist.</span>
               </li>
             </ul>

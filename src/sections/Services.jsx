@@ -96,7 +96,7 @@ function ServiceCard({ service, index }) {
       </div>
 
       <div className="p-8">
-        <h3 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-orange-500 transition-colors">
+        <h3 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-red-600 transition-colors">
           {service.title}
         </h3>
         <p className="text-gray-500 text-sm mt-3 leading-relaxed">
@@ -106,10 +106,10 @@ function ServiceCard({ service, index }) {
         {/* Navigation Logic Added Here */}
         <div 
           onClick={() => navigate("/services")}
-          className="mt-6 flex items-center gap-2 text-orange-500 font-bold text-sm cursor-pointer group/link w-fit"
+          className="mt-6 flex items-center gap-2 text-red-600 font-bold text-sm cursor-pointer group/link w-fit"
         >
           <span>Read More</span>
-          <div className="w-6 h-[2px] bg-orange-500 group-hover/link:w-10 transition-all duration-300" />
+          <div className="w-6 h-[2px] bg-red-600 group-hover/link:w-10 transition-all duration-300" />
         </div>
       </div>
     </motion.div>
@@ -135,7 +135,7 @@ function ExploreButton() {
       className="group relative overflow-hidden bg-gray-900 text-white rounded-full px-10 py-4 font-bold transition-all hover:pr-14"
     >
       <span className="relative z-10">Explore All Services</span>
-      <div className="absolute inset-0 bg-orange-500 translate-y-[101%] group-hover:translate-y-0 transition-transform duration-300" />
+      <div className="absolute inset-0 bg-red-600 translate-y-[101%] group-hover:translate-y-0 transition-transform duration-300" />
       <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all" size={20} />
     </button>
   );

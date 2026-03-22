@@ -106,9 +106,11 @@ export default function Track() {
                   </div>
 
                   <a
-                    href={`https://wa.me/?text=Update on ${invoice}`}
-                    className="mt-8 flex items-center justify-center gap-2 w-full py-4 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl transition-all font-bold hover:bg-emerald-100"
-                  >
+  href={`https://wa.me/9188108851?text=Hello UNEX, I need an update on shipment ${invoice}`}
+  target="_blank"
+  rel="noreferrer"
+  className="mt-8 flex items-center justify-center gap-2 w-full py-4 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl transition-all font-bold hover:bg-emerald-100"
+>
                     <MessageSquare size={18} /> Support Chat
                   </a>
                 </div>

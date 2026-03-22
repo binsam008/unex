@@ -1,8 +1,39 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
+import { useEffect, useRef } from "react";
+
+// --- Sub-component for the counting effect ---
+function Counter({ value, direction = "up" }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  
+  // Create a motion value to track the number
+  const motionValue = useMotionValue(direction === "down" ? value : 0);
+  
+  // Use a spring for a smooth "organic" counting feel
+  const springValue = useSpring(motionValue, {
+    damping: 30,
+    stiffness: 100,
+  });
+
+  useEffect(() => {
+    if (isInView) {
+      motionValue.set(value);
+    }
+  }, [motionValue, value, isInView]);
+
+  useEffect(() => {
+    springValue.on("change", (latest) => {
+      if (ref.current) {
+        ref.current.textContent = Math.floor(latest).toLocaleString();
+      }
+    });
+  }, [springValue]);
+
+  return <span ref={ref} />;
+}
 
 export default function About() {
-  // Animation Variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -21,9 +52,15 @@ export default function About() {
     visible: { opacity: 1, x: 0, transition: { duration: 1, ease: "easeOut" } },
   };
 
+  const stats = [
+    { target: 10, suffix: " Yr+", desc: "of shipping expertise" },
+    { target: 120, suffix: " +", desc: "cargo handled worldwide" },
+    { target: 12000, suffix: " +", desc: "customer satisfied" },
+  ];
+
   return (
     <section className="py-20 bg-white px-6 overflow-hidden">
-      <motion.div 
+      <motion.div
         className="max-w-8xl mx-auto"
         initial="hidden"
         whileInView="visible"
@@ -31,19 +68,16 @@ export default function About() {
         variants={containerVariants}
       >
         {/* TOP SECTION */}
-        <motion.h2 
+        <motion.h2
           variants={itemVariants}
-          className="text-orange-500 font-extrabold text-4xl px-4 md:px-20 mb-10 tracking-tight"
+          className="text-red-600 font-extrabold text-4xl px-4 md:px-20 mb-10 tracking-tight"
         >
           ABOUT US
         </motion.h2>
 
         <div className="grid md:grid-cols-2 gap-12 items-center px-4 md:px-10">
           {/* LEFT IMAGE */}
-          <motion.div 
-            variants={imageVariants}
-            className="flex justify-center relative group"
-          >
+          <motion.div variants={imageVariants} className="flex justify-center relative group">
             <div className="absolute -inset-2 rounded-[40px] scale-95 group-hover:scale-100 transition-transform duration-500 -z-10" />
             <img
               src="/about.png"
@@ -53,42 +87,38 @@ export default function About() {
           </motion.div>
 
           {/* RIGHT TEXT */}
-  {/* RIGHT TEXT */}
-<motion.div variants={itemVariants}>
-<p 
-  lang="en" 
-  className="text-gray-700 leading-relaxed text-lg md:text-[25px] font-outfit text-justify hyphens-auto"
-  style={{ hyphens: 'auto' }}
->
-  We Deliver, Track & Ship is a comprehensive logistics and
-  transportation provider dedicated to delivering seamless, 
-  reliable solutions for businesses and individuals. From initial 
-  order placement to final delivery, we manage every stage of the 
-  supply chain with precision, powered by advanced tracking 
-  technology and a customer-first approach.
-</p>
-</motion.div>
+          <motion.div variants={itemVariants}>
+            <p
+              lang="en"
+              className="text-gray-700 leading-relaxed text-lg md:text-[25px] font-outfit text-left hyphens-auto"
+              style={{ hyphens: "auto" }}
+            >
+              We Deliver, Track & Ship is a comprehensive logistics and transportation provider
+              dedicated to delivering seamless, reliable solutions for businesses and individuals.
+              From initial order placement to final delivery, we manage every stage of the supply
+              chain with precision, powered by advanced tracking technology and a customer-first
+              approach.
+            </p>
+          </motion.div>
         </div>
 
         {/* STATS SECTION */}
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center mt-24 border-t border-gray-100 pt-16"
         >
-          {[
-            { label: "10 Yr+", desc: "of shipping expertise" },
-            { label: "120 +", desc: "cargo handled worldwide" },
-            { label: "12 K+", desc: "customer satisfied" }
-          ].map((stat, i) => (
+          {stats.map((stat, i) => (
             <motion.div key={i} variants={itemVariants} className="space-y-2">
-              <h3 className="text-5xl font-black text-gray-900">{stat.label}</h3>
-              <p className="text-orange-600 font-bold uppercase tracking-widest text-xs">
+              <h3 className="text-5xl font-black text-gray-900">
+                <Counter value={stat.target} />
+                {stat.suffix}
+              </h3>
+              <p className="text-red-600 font-bold uppercase tracking-widest text-xs">
                 {stat.desc}
               </p>
             </motion.div>
           ))}
         </motion.div>
-
       </motion.div>
     </section>
   );

@@ -27,7 +27,7 @@ export default function ClientReviews() {
       <div className="max-w-8xl mx-auto">
 
         {/* Title */}
-        <h2 className="text-4xl font-extrabold text-orange-300 mb-10">
+        <h2 className="text-4xl font-extrabold text-red-300 mb-10">
           CLIENT REVIEWS
         </h2>
 
@@ -43,7 +43,7 @@ export default function ClientReviews() {
                 className="bg-[#FFF4EB] inline-block w-[330px] rounded-2xl p-6 shadow-sm border border-[#FFE6D3] whitespace-normal"
               >
                 {/* Quote Icon */}
-                <div className="text-5xl text-[#F4A37A] leading-none mb-4">
+                <div className="text-5xl text-[#ff7632] leading-none mb-4">
                   “
                 </div>
 

@@ -64,7 +64,7 @@ export default function WhyChooseUs() {
       }}
     >
       {/* Orange Overlay with subtle gradient for depth */}
-      <div className="absolute inset-0 bg-gradient-to-r from-orange-600/95 to-orange-500/80"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-red-500/95 to-red-600/80"></div>
 
       <motion.div
         className="relative z-10 max-w-7xl mx-auto grid md:grid-cols-2 gap-16 text-white items-center"
@@ -84,7 +84,7 @@ export default function WhyChooseUs() {
           </motion.span>
           <h2 className="text-5xl md:text-7xl font-black leading-tight font-outfit uppercase">
             WHY <br /> 
-            <span className="text-orange-200">CHOOSE US?</span>
+            <span className="text-red-200">CHOOSE US?</span>
           </h2>
           <div className="w-20 h-2 bg-white rounded-full" />
           <p className="text-xl md:text-2xl leading-relaxed font-light max-w-md opacity-90">
@@ -101,7 +101,7 @@ export default function WhyChooseUs() {
               whileHover={{ x: 10 }}
               className="flex items-start gap-5 p-4 rounded-2xl hover:bg-white/10 transition-colors duration-300 cursor-default group"
             >
-              <div className="bg-white/20 p-3 rounded-xl group-hover:bg-white group-hover:text-orange-600 transition-all duration-300">
+              <div className="bg-white/20 p-3 rounded-xl group-hover:bg-white group-hover:text-red-600 transition-all duration-300">
                 {item.icon}
               </div>
               <div>
