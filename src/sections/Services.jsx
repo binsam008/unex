@@ -19,7 +19,10 @@ export default function Services() {
 
   const slide = (direction) => {
     if (sliderRef.current) {
-      const scrollAmount = direction === "left" ? -400 : 400;
+      // Get the exact width of one card + the gap (32px for gap-8)
+      const child = sliderRef.current.children[0];
+      const cardWidth = child ? child.offsetWidth : 400;
+      const scrollAmount = direction === "left" ? -(cardWidth + 32) : (cardWidth + 32);
       sliderRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
     }
   };
@@ -27,9 +30,9 @@ export default function Services() {
   return (
     <section className="py-24 px-6 bg-white overflow-hidden">
       <div className="max-w-[1400px] mx-auto">
-        
+
         {/* 1. HEADER */}
-        <motion.div 
+        <motion.div
           ref={headerRef}
           initial={{ opacity: 0, y: 30 }}
           animate={isHeaderInView ? { opacity: 1, y: 0 } : {}}
@@ -51,10 +54,9 @@ export default function Services() {
           </div>
         </motion.div>
 
-        {/* 2. SLIDER */}
         <div
           ref={sliderRef}
-          className="flex gap-8 overflow-x-auto mt-16 pb-10 scroll-smooth snap-x snap-mandatory no-scrollbar"
+          className="flex gap-8 overflow-x-auto mt-16 pb-10 scroll-smooth snap-x snap-mandatory no-scrollbar [&::-webkit-scrollbar]:hidden"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {services.map((service, index) => (
@@ -64,7 +66,7 @@ export default function Services() {
 
         {/* 3. VIEW ALL CTA */}
         <div className="flex justify-center mt-8">
-           <ExploreButton />
+          <ExploreButton />
         </div>
       </div>
     </section>
@@ -102,9 +104,9 @@ function ServiceCard({ service, index }) {
         <p className="text-gray-500 text-sm mt-3 leading-relaxed">
           {service.desc}
         </p>
-        
+
         {/* Navigation Logic Added Here */}
-        <div 
+        <div
           onClick={() => navigate("/services")}
           className="mt-6 flex items-center gap-2 text-red-600 font-bold text-sm cursor-pointer group/link w-fit"
         >
@@ -130,7 +132,7 @@ function NavButton({ icon, onClick }) {
 function ExploreButton() {
   const navigate = useNavigate();
   return (
-    <button 
+    <button
       onClick={() => navigate("/services")}
       className="group relative overflow-hidden bg-gray-900 text-white rounded-full px-10 py-4 font-bold transition-all hover:pr-14"
     >

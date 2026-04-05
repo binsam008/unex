@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Truck, PackageCheck, Search, Utensils, FileText, 
+import {
+  Truck, PackageCheck, Search, Utensils, FileText,
   ClipboardCheck, Globe, Headphones, BoxSelect, ArrowUpRight
 } from "lucide-react";
 
@@ -30,7 +30,7 @@ const servicesData = [
 
     id: 2,
 
-    title: "Free Packing",
+    title: "Secure Packaging",
 
     icon: <PackageCheck size={20} />,
 
@@ -162,8 +162,8 @@ export default function ModernServices() {
 
   return (
     <section className="bg-white py-26 px-6 md:px-12 font-outfit">
-      <div className="max-w-6xl mx-auto">
-        
+      <div className="max-w-7xl mx-auto">
+
         {/* Minimalist Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
           <div className="max-w-xl">
@@ -177,24 +177,34 @@ export default function ModernServices() {
         </div>
 
         {/* Modern Segmented Control (Tabs) */}
-        <div className="flex overflow-x-auto no-scrollbar gap-2 p-1.5 bg-gray-100/80 backdrop-blur-md rounded-2xl mb-8 border border-gray-200/50">
-          {servicesData.map((service) => (
-            <button
-              key={service.id}
-              onClick={() => setActiveId(service.id)}
-              className={`relative flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300
-                ${activeId === service.id ? "text-white" : "text-gray-500 hover:bg-gray-200"}`}
-            >
-              {activeId === service.id && (
-                <motion.div
-                  layoutId="activePill"
-                  className="absolute inset-0 bg-[#002242] rounded-xl shadow-md"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                />
-              )}
-              <span className="relative z-10">{service.title}</span>
-            </button>
-          ))}
+        {/* Modern Segmented Control (Tabs) */}
+        <div className="flex justify-center">
+          <div className="inline-flex overflow-x-auto no-scrollbar gap-1.5 p-1.5 bg-gray-100/80 backdrop-blur-md rounded-2xl mb-10 border border-gray-200/50 max-w-full">
+
+            {servicesData.map((service) => (
+              <button
+                key={service.id}
+                onClick={() => setActiveId(service.id)}
+                className={`relative flex-shrink-0 flex items-center px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 whitespace-nowrap
+          ${activeId === service.id
+                    ? "text-white"
+                    : "text-gray-500 hover:bg-gray-200"}`}
+              >
+                {activeId === service.id && (
+                  <motion.div
+                    layoutId="activePill"
+                    className="absolute inset-0 bg-[#002242] rounded-lg shadow-md"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                  />
+                )}
+
+                <span className="relative z-10">
+                  {service.title}
+                </span>
+              </button>
+            ))}
+
+          </div>
         </div>
 
         {/* Content Feature Card - Reduced Height Version */}
@@ -209,18 +219,18 @@ export default function ModernServices() {
           >
             {/* Image Section - Height Capped at 450px */}
             <div className="lg:col-span-6 h-[280px] lg:h-[450px] overflow-hidden relative">
-               <motion.img 
+              <motion.img
                 initial={{ scale: 1.1 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.7 }}
-                src={currentService.image} 
-                alt={currentService.title} 
-                className="w-full h-full object-cover" 
+                src={currentService.image}
+                alt={currentService.title}
+                className="w-full h-full object-cover"
               />
               <div className="absolute top-6 left-6">
                 <div className="bg-white/95 backdrop-blur px-4 py-2 rounded-full flex items-center gap-2 shadow-lg">
-                   <span className="text-[#e31e24]">{currentService.icon}</span>
-                   <span className="text-[#002242] font-bold text-[10px] uppercase tracking-widest">{currentService.title}</span>
+                  <span className="text-[#e31e24]">{currentService.icon}</span>
+                  <span className="text-[#002242] font-bold text-[10px] uppercase tracking-widest">{currentService.title}</span>
                 </div>
               </div>
             </div>
@@ -238,7 +248,7 @@ export default function ModernServices() {
                 <p className="text-gray-600 text-base leading-relaxed mb-8">
                   {currentService.desc}
                 </p>
-                
+
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link to="/quote" className="flex-1">
                     <button className="w-full bg-[#e31e24] text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#c4161b] transition-all text-sm">

@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function CTA() {
+  const navigate = useNavigate();
+
   return (
     <section className="px-6 py-10 overflow-hidden">
       <motion.div
@@ -39,6 +42,7 @@ export default function CTA() {
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300 }}
             className="bg-white text-black rounded-lg px-5 py-2 text-sm font-medium hover:bg-gray-100 transition"
+            onClick={() => navigate("/quote")}
           >
             Ship now
           </motion.button>

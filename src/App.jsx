@@ -17,9 +17,11 @@ import WhatsAppIcon from "./components/WhatsAppIcon"; // Import the new componen
 
 function App() {
   const location = useLocation();
-  
+
   // Hide WhatsApp and Navbar/Footer if we are on the Admin Dashboard for a cleaner "Control Panel" feel
-  const isAdminPage = location.pathname.startsWith("/admin-dashboard");
+  const isAdminPage = 
+    location.pathname.startsWith("/ds-8u92ne3x9l7o45-secure") || 
+    location.pathname.startsWith("/admin-unexlogistics");
 
   return (
     <>
@@ -35,12 +37,12 @@ function App() {
         <Route path="/support/documents" element={<Documents />} />
         <Route path="/support/prohibited-items" element={<ProhibitedItems />} />
         <Route path="/quote" element={<Quote />} />
-        <Route path="/contact" element={<Contact/>} />
+        <Route path="/contact" element={<Contact />} />
 
         {/* Admin */}
         <Route path="/admin-unexlogistics" element={<AdminLogin />} />
         <Route
-          path="/admin-dashboard"
+          path="/ds-8u92ne3x9l7o45-secure"
           element={
             <ProtectedRoute adminOnly={true}>
               <AdminDashboard />
@@ -50,7 +52,7 @@ function App() {
       </Routes>
 
       {!isAdminPage && <Footer />}
-      
+
       {/* Floating WhatsApp stays on all public pages */}
       {!isAdminPage && <WhatsAppIcon />}
     </>
