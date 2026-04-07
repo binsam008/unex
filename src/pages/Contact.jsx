@@ -127,15 +127,9 @@ export default function ContactOffices() {
 
   return (
     <div className="relative min-h-screen px-6 md:px-20 py-24 font-outfit bg-slate-50 overflow-hidden">
-      {/* Dynamic Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-orange-300/20 blur-[100px] mix-blend-multiply"></div>
-        <div className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full bg-indigo-300/20 blur-[120px] mix-blend-multiply"></div>
-      </div>
-
       <div className="relative z-10 max-w-7xl mx-auto">
         <div className="text-center mb-20">
-          <h2 className="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight text-[#0A1D45]">
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight text-[#0A1D45]">
             Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400">Global</span> Presence
           </h2>
           <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto font-medium">
@@ -146,7 +140,7 @@ export default function ContactOffices() {
         {/* Main Branches */}
         <div className="mb-24">
           <div className="flex items-center gap-6 mb-12">
-            <h3 className="text-3xl font-extrabold text-[#0A1D45] shrink-0">
+            <h3 className="text-2xl font-extrabold text-[#0A1D45] shrink-0">
                Main Operations
             </h3>
             <div className="h-[2px] flex-1 bg-gradient-to-r from-orange-200 to-transparent rounded-full"></div>
@@ -160,7 +154,7 @@ export default function ContactOffices() {
         {/* Overseas Branches */}
         <div>
           <div className="flex items-center gap-6 mb-12">
-            <h3 className="text-3xl font-extrabold text-[#0A1D45] shrink-0">
+            <h3 className="text-2xl font-extrabold text-[#0A1D45] shrink-0">
                Associated Network
             </h3>
             <div className="h-[2px] flex-1 bg-gradient-to-r from-indigo-200 to-transparent rounded-full"></div>

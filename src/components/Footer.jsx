@@ -3,8 +3,8 @@ import { Instagram, Facebook, Linkedin, Mail, Phone, MapPin } from "lucide-react
 
 export default function Footer() {
   const services = [
-    "Door Pickup", "Free Packing", "Online Tracking", 
-    "Food Delivery", "Document Delivery", "Imports"
+    "Door Pickup", "Secure Packing", "Online Tracking",
+    "Document Delivery", "Imports"
   ];
 
   const quickLinks = [
@@ -18,14 +18,14 @@ export default function Footer() {
     <footer className="bg-white text-[#0A0F1C] pt-12 pb-6 px-6 rounded-t-[30px] font-outfit border-t border-gray-100 shadow-sm">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
-          
+
           {/* Brand Column - Compact */}
           <div className="space-y-4">
             <Link to="/">
-              <img 
-                src="/logo.png" 
-                alt="Logo" 
-                className="h-20 w-auto object-contain" 
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="h-20 w-auto object-contain"
               />
             </Link>
             <p className="text-slate-500 text-sm leading-snug max-w-xs">
@@ -74,15 +74,15 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-slate-500 text-sm">
                 <Phone size={14} className="text-red-600" />
-                <span>+1 234 567-890</span>
+                <span>+91 85533 60073</span>
               </li>
               <li className="flex items-center gap-2 text-slate-500 text-sm">
                 <Mail size={14} className="text-red-600" />
                 <span>support@unex.com</span>
               </li>
-              <li className="flex items-center gap-2 text-slate-500 text-sm">
-                <MapPin size={14} className="text-red-600" />
-                <span className="truncate">Global Hub, Business Dist.</span>
+              <li className="flex items-start gap-2 text-slate-500 text-sm">
+                <MapPin size={14} className="text-red-600 mt-1 shrink-0" />
+                <span className="leading-tight">No-33, 1st Main Road, SR Nagar, Near IBIS Hotel, Bangalore - 560027</span>
               </li>
             </ul>
           </div>

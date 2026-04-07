@@ -45,10 +45,6 @@ export default function Track() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F8FAFC] to-slate-100 text-slate-900 py-26 px-4 font-outfit relative overflow-hidden">
 
-      {/* Decorative Blob Background */}
-      <div className="absolute top-[-5%] right-[-5%] w-[400px] h-[400px] bg-red-500/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-orange-500/10 blur-[120px] rounded-full pointer-events-none" />
-
       <div className="max-w-5xl mx-auto relative z-10">
 
         {/* COMPACT SEARCH HEADER */}
@@ -60,7 +56,7 @@ export default function Track() {
           <div className="inline-flex items-center justify-center p-2.5 bg-red-600 rounded-xl shadow-md shadow-red-500/10 mb-4 text-white font-black text-xs tracking-widest px-5">
             CARGO TRACKING
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-3 tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-3 tracking-tight">
             Track Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">Shipment</span>
           </h1>
           <p className="text-slate-500 mb-8 max-w-md mx-auto font-medium text-base">Enter tracking number for real-time updates.</p>
