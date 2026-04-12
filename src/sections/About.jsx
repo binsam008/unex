@@ -1,5 +1,5 @@
 "use client";
-import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
+import { motion, useMotionValue, useSpring, useInView, useMotionValueEvent } from "framer-motion";
 import { useEffect, useRef } from "react";
 
 // --- Sub-component for the counting effect ---
@@ -22,13 +22,17 @@ function Counter({ value, direction = "up" }) {
     }
   }, [motionValue, value, isInView]);
 
-  useEffect(() => {
-    springValue.on("change", (latest) => {
-      if (ref.current) {
+  const isFloat = value % 1 !== 0;
+
+  useMotionValueEvent(springValue, "change", (latest) => {
+    if (ref.current) {
+      if (isFloat) {
+        ref.current.textContent = latest.toFixed(1);
+      } else {
         ref.current.textContent = Math.floor(latest).toLocaleString();
       }
-    });
-  }, [springValue]);
+    }
+  });
 
   return <span ref={ref} />;
 }
@@ -53,9 +57,9 @@ export default function About() {
   };
 
   const stats = [
-    { target: 10, suffix: " Yr+", desc: "of shipping expertise" },
-    { target: 120, suffix: " +", desc: "cargo handled worldwide" },
-    { target: 12000, suffix: " +", desc: "customer satisfied" },
+    { target: 20, suffix: " Yr+", desc: "of shipping expertise" },
+    { target: 10, suffix: " L+", desc: "cargos handled worldwide" },
+    { target: 5.5, suffix: " L+", desc: "customers satisfied" },
   ];
 
   return (
