@@ -1,5 +1,9 @@
+import React, { useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import LoadingScreen from "./components/LoadingScreen";
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -17,11 +21,34 @@ import WhatsAppIcon from "./components/WhatsAppIcon"; // Import the new componen
 
 function App() {
   const location = useLocation();
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  useEffect(() => {
+    // 1. Minimum timer so the satisfying logo fill animation is actually seen
+    const minLoadTime = new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // 2. Load core global identity and wait for the network to resolve auth state
+    const authResolve = new Promise(resolve => {
+      const unsubscribe = onAuthStateChanged(auth, () => {
+        resolve();
+        unsubscribe(); // Once we know identity, resolve the bootloader
+      });
+    });
+
+    // Remove the Loading Screen only when BOTH the animation is done and the data is loaded
+    Promise.all([minLoadTime, authResolve]).then(() => {
+      setInitialLoading(false);
+    });
+  }, []);
 
   // Hide WhatsApp and Navbar/Footer if we are on the Admin Dashboard for a cleaner "Control Panel" feel
   const isAdminPage = 
     location.pathname.startsWith("/ds-8u92ne3x9l7o45-secure") || 
     location.pathname.startsWith("/admin-unexlogistics");
+
+  if (initialLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <>
