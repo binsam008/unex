@@ -6,10 +6,10 @@ import { useEffect, useRef } from "react";
 function Counter({ value, direction = "up" }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  
+
   // Create a motion value to track the number
   const motionValue = useMotionValue(direction === "down" ? value : 0);
-  
+
   // Use a spring for a smooth "organic" counting feel
   const springValue = useSpring(motionValue, {
     damping: 30,
@@ -104,7 +104,7 @@ export default function About() {
         {/* STATS SECTION */}
         <motion.div
           variants={containerVariants}
-          className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center mt-16 border-t border-gray-100 pt-12"
+          className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center mt-16 border-t border-gray-100 pt-12"
         >
           {stats.map((stat, i) => (
             <motion.div

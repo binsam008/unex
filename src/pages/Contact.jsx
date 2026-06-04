@@ -90,11 +90,8 @@ export default function ContactOffices() {
               <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-sm bg-white border ${isMain ? 'border-orange-100 text-orange-500' : 'border-indigo-100 text-indigo-500'}`}>
                 <Phone size={18} strokeWidth={2.5} />
               </div>
-              <div className="pt-1.5 flex flex-col justify-center">
+              <div className="pt-2 flex items-center">
                 <p className="text-sm font-semibold text-gray-800 tracking-wide">{b.phone}</p>
-                {b.phone2 && (
-                  <p className="text-sm font-semibold text-gray-800 tracking-wide mt-1">{b.phone2}</p>
-                )}
               </div>
             </div>
           )}
@@ -108,8 +105,8 @@ export default function ContactOffices() {
               target="_blank"
               rel="noreferrer"
               className={`inline-flex items-center justify-between w-full py-3.5 px-5 rounded-2xl font-bold text-sm transition-all duration-300 shadow-sm ${isMain
-                  ? 'bg-orange-50 hover:bg-orange-500 text-orange-600 hover:text-white border border-orange-200/50 hover:border-transparent hover:shadow-orange-500/30'
-                  : 'bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white border border-indigo-200/50 hover:border-transparent hover:shadow-indigo-500/30'
+                ? 'bg-orange-50 hover:bg-orange-500 text-orange-600 hover:text-white border border-orange-200/50 hover:border-transparent hover:shadow-orange-500/30'
+                : 'bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white border border-indigo-200/50 hover:border-transparent hover:shadow-indigo-500/30'
                 }`}
             >
               Contact Support
