@@ -31,28 +31,28 @@ export default function WhyChooseUs() {
   const features = [
     {
       icon: <Globe size={32} />,
-      title: "Global Reach",
-      desc: "We handle international courier, air cargo, and freight forwarding with strong coordination across major destinations.",
+      title: "Global Network",
+      desc: "We connect you to key destinations worldwide through our trusted global courier and air cargo network.",
     },
     {
       icon: <Truck size={32} />,
-      title: "Reliable Delivery",
-      desc: "We ensure timely and secure movement of documents and shipments.",
+      title: "On-Time Guarantee",
+      desc: "We prioritize speed and precision so your packages always arrive exactly when expected.",
     },
     {
       icon: <Shield size={32} />,
-      title: "Safe Handling",
-      desc: "Strict safety measures minimize risks of loss, damage, or pilferage.",
+      title: "Handled with Care",
+      desc: "From fragile items to high-value goods, we treat every package as if it were our own.",
     },
     {
       icon: <SatelliteDish size={32} />,
-      title: "Clear Tracking",
-      desc: "Real-time tracking keeps you informed from pickup to delivery.",
+      title: "Real-Time Updates",
+      desc: "No guesswork needed. Watch your package make its way to its destination in real time.",
     },
     {
       icon: <DollarSign size={32} />,
-      title: "Fair Pricing",
-      desc: "Transparent and competitive rates without hidden charges.",
+      title: "No Hidden Fees",
+      desc: "Simple, honest, and highly competitive pricing so you always know what you're paying for.",
     },
   ];
 
@@ -88,7 +88,7 @@ export default function WhyChooseUs() {
           </h2>
           <div className="w-20 h-2 bg-white rounded-full" />
           <p className="text-xl md:text-2xl leading-relaxed font-light max-w-md opacity-90">
-            Tailored logistics solutions for every business requirement.
+            Logistics solutions designed around you and your business.
           </p>
         </motion.div>
 

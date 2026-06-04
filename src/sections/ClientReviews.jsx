@@ -2,23 +2,28 @@ export default function ClientReviews() {
   const reviews = [
     {
       name: "Emma",
-      text: "Outstanding customer service and timely updates. UNEX is trustworthy!"
+      country: "Singapore",
+      text: "I was really nervous about shipping fragile items overseas, but UNEX kept me updated at every step. Excellent service and zero hassle!"
     },
     {
       name: "James",
-      text: "Their international courier services are efficient, secure, and affordable."
+      country: "Australia",
+      text: "We've been using their courier service for our business shipments, and they haven't missed a deadline yet. Affordable and incredibly reliable."
     },
     {
       name: "Peter",
-      text: "UNEX provides reliable international courier service with clear communication and on-time delivery."
+      country: "Sri Lanka",
+      text: "Awesome communication! The tracking was spot on, and the package arrived a day earlier than expected. Definitely using them again."
     },
     {
       name: "Sophia",
-      text: "Exceptional logistics support! Fast delivery and professional handling of all shipments."
+      country: "UAE",
+      text: "The customer support team went above and beyond to help with my customs paperwork. Fast, professional, and very helpful."
     },
     {
       name: "Michael",
-      text: "Highly satisfied with their tracking accuracy and seamless transportation service."
+      country: "India",
+      text: "Highly accurate tracking and friendly delivery staff. They make international shipping feel like local delivery."
     },
   ];
 
@@ -52,10 +57,15 @@ export default function ClientReviews() {
                   {review.text}
                 </p>
 
-                {/* Client Name */}
-                <p className="text-gray-600 font-semibold text-sm">
-                  {review.name}
-                </p>
+                {/* Client Name & Country */}
+                <div className="flex justify-between items-center">
+                  <p className="text-gray-700 font-semibold text-sm">
+                    {review.name}
+                  </p>
+                  <span className="text-xs text-gray-500 font-bold">
+                    {review.country}
+                  </span>
+                </div>
               </div>
             ))}
 

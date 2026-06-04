@@ -77,7 +77,7 @@ export default function SectionTwo() {
         </div>
 
         {/* DESKTOP VERSION */}
-        <div className="hidden md:flex relative overflow-hidden shadow-2xl h-[440px] rounded-xl">
+        <div className="hidden md:flex relative overflow-hidden shadow-2xl h-[380px] rounded-xl">
           <div className="absolute inset-0 z-0">
             <img src="/hero3.jpg" className="w-full h-full object-cover"/>
           </div>
@@ -118,7 +118,7 @@ export default function SectionTwo() {
             initial={{opacity:0,x:70}}
             whileInView={{opacity:1,x:0}}
             transition={{duration:1.2}}
-            className="doc-right-clip relative flex-1 bg-white/65 p-12 z-20 text-[#0b1a33]"
+            className="doc-right-clip relative flex-[1.0] bg-white/65 p-12 z-20 text-[#0b1a33]"
           >
             <div className="relative z-30 w-[85%] ml-auto">
               <h2 className="text-[32px] font-bold uppercase">
@@ -128,9 +128,6 @@ export default function SectionTwo() {
                 <li>• Safe student baggage shipping</li>
                 <li>• Stress-free household relocation</li>
                 <li>• Smooth personal effects clearance</li>
-                <li>• Commercial cargo</li>
-                <li>• Air and sea freight</li>
-                <li>• Courier worldwide</li>
                 <li>• Secure import handling</li>
               </ul>
               <button

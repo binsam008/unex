@@ -57,9 +57,9 @@ export default function About() {
   };
 
   const stats = [
-    { target: 20, suffix: " Yr+", desc: "of shipping expertise" },
-    { target: 10, suffix: " L+", desc: "cargos handled worldwide" },
-    { target: 5.5, suffix: " L+", desc: "customers satisfied" },
+    { target: 20, suffix: "+", label: "Years of Experience", desc: "In global logistics and shipping" },
+    { target: 10, suffix: " Lakh+", label: "Shipments Delivered", desc: "Safe, secure, and on-time worldwide" },
+    { target: 5.5, suffix: " Lakh+", label: "Happy Customers", desc: "Trusted by students, families, and businesses" },
   ];
 
   return (
@@ -94,14 +94,9 @@ export default function About() {
           <motion.div variants={itemVariants}>
             <p
               lang="en"
-              className="text-gray-700 leading-relaxed text-lg md:text-[25px] font-outfit text-left hyphens-auto"
-              style={{ hyphens: "auto" }}
+              className="text-gray-600 leading-relaxed text-base md:text-[18px] text-left"
             >
-              We Deliver, Track & Ship is a comprehensive logistics and transportation provider
-              dedicated to delivering seamless, reliable solutions for businesses and individuals.
-              From initial order placement to final delivery, we manage every stage of the supply
-              chain with precision, powered by advanced tracking technology and a customer-first
-              approach.
+              At UNEX, we believe shipping shouldn't be stressful. We've built a comprehensive logistics network that treats every package as if it were our own. From the moment you place an order to the final doorstep delivery, our team works around the clock to manage every step of the journey with precision. Combining cutting-edge tracking technology with a deeply human, customer-first approach, we make sure your shipments arrive safely, on time, and without surprises.
             </p>
           </motion.div>
         </div>
@@ -109,15 +104,23 @@ export default function About() {
         {/* STATS SECTION */}
         <motion.div
           variants={containerVariants}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center mt-24 border-t border-gray-100 pt-16"
+          className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center mt-16 border-t border-gray-100 pt-12"
         >
           {stats.map((stat, i) => (
-            <motion.div key={i} variants={itemVariants} className="space-y-2">
-              <h3 className="text-5xl font-black text-gray-900">
+            <motion.div
+              key={i}
+              variants={itemVariants}
+              className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center relative overflow-hidden group"
+            >
+              <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-orange-500 to-[#e31e24] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+              <h3 className="text-3xl md:text-4xl font-black text-[#0b1a33] tracking-tight whitespace-nowrap">
                 <Counter value={stat.target} />
-                {stat.suffix}
+                <span className="text-[#e31e24]">{stat.suffix}</span>
               </h3>
-              <p className="text-red-600 font-bold uppercase tracking-widest text-xs">
+              <p className="text-[#0b1a33] font-bold text-sm mt-2 leading-snug">
+                {stat.label}
+              </p>
+              <p className="text-gray-500 text-xs mt-1 leading-relaxed max-w-[220px]">
                 {stat.desc}
               </p>
             </motion.div>

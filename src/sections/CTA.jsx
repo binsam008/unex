@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 export default function CTA() {
   const navigate = useNavigate();
 
-  const headingLines = ["Tailored logistics", "solutions for every", "business requirement."];
+  const headingLines = ["Logistics solutions", "designed to fit your", "exact business needs."];
 
   return (
     <section className="px-6 py-10 overflow-hidden">

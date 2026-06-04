@@ -10,11 +10,11 @@ export default function Services() {
   const isHeaderInView = useInView(headerRef, { once: true });
 
   const services = [
-    { title: "International Courier Tracking", img: "/service1.png", desc: "Track your international shipments in real time with global coverage." },
-    { title: "Door-to-Door Pickup & Delivery", img: "/service2.png", desc: "Fast doorstep pickup and secure delivery across domestic locations." },
-    { title: "Import & Export Service", img: "/service3.png", desc: "Reliable import/export handling with documentation and customs." },
-    { title: "Free Baggage Service", img: "/service4.png", desc: "Send extra baggage safely at affordable rates without restrictions." },
-    { title: "Secured Document Delivery", img: "/service5.png", desc: "Confidential and time-sensitive documents delivered with speed." },
+    { title: "Real-Time Global Tracking", img: "/service1.png", desc: "Keep tabs on your package anywhere in the world with live, accurate status updates." },
+    { title: "Door-to-Door Convenience", img: "/service2.png", desc: "We'll pick up shipments directly from your doorstep and handle the entire journey to their destination." },
+    { title: "Import & Export Solutions", img: "/service3.png", desc: "Seamless cross-border shipping backed by our experienced clearance and documentation teams." },
+    { title: "Excess Baggage Shipping", img: "/service4.png", desc: "Travel light and let us ship your extra bags safely and affordably, without airline hassles." },
+    { title: "Express Document Delivery", img: "/service5.png", desc: "Urgent and confidential papers delivered swiftly and securely with absolute priority." },
   ];
 
   const slide = (direction) => {
@@ -41,9 +41,9 @@ export default function Services() {
         >
           <div>
             <h2 className="text-3xl md:text-5xl font-black text-gray-900 leading-[1.1]">
-              GLOBAL LOGISTICS <br />
+              LOGISTICS BUILT <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">
-                EXPERTISE
+                FOR YOU
               </span>
             </h2>
           </div>

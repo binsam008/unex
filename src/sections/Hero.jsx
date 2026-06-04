@@ -52,8 +52,7 @@ export default function Hero() {
             }}
             className="mt-6 text-sm md:text-xl max-w-xl text-white/90"
           >
-            Door-to-door international delivery with express time tracking.
-            Reliable, secure and cost-effective shipping worldwide.
+            Send packages anywhere in the world with total peace of mind. We handle the paperwork, track it in real time, and deliver right to your door.
           </motion.p>
 
           <motion.div
