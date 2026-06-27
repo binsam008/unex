@@ -7,7 +7,7 @@ export default function ContactOffices() {
       head: "Unex Logistics",
       address:
         "No-33, 1st main Road,\nSR Nagar, Near IBIS Hotel,\nBangalore-560027",
-      phone: "+91 85533 60073",
+      phone: "+91 82772 87881",
       phone2: "+91 91642 84562"
     },
     {

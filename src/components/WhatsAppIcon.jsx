@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react"; // Using Lucide for a clean, consistent look
 
 export default function WhatsAppIcon() {
-  const phoneNumber = "1234567890"; // Replace with your actual number
+  const phoneNumber = "+91 82772 87881"; // Replace with your actual number
   const message = "Hello! I would like to inquire about your global courier services.";
   
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
