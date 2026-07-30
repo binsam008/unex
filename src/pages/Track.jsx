@@ -85,7 +85,7 @@ export default function Track() {
 
           <div className="relative max-w-lg mx-auto">
             <input
-              placeholder="e.g. UNX-882100"
+              placeholder="INVOICE-NUMBER"
               className="w-full bg-white/80 backdrop-blur-md border border-white p-4 pl-6 rounded-full shadow-sm focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all pr-32 text-slate-800 text-base font-semibold placeholder:font-normal placeholder:opacity-50 uppercase tracking-wider"
               value={invoice}
               onChange={(e) => setInvoice(e.target.value.toUpperCase())}
@@ -236,8 +236,8 @@ export default function Track() {
                       >
                         {/* GREEN DOT / STATUS ICON */}
                         <div className={`absolute -left-1 top-0 w-10 h-10 rounded-full flex items-center justify-center z-10 transition-all ${isLatest
-                            ? "bg-white border-[3px] border-emerald-500 shadow-[0_0_18px_rgba(16,185,129,0.5)] scale-110"
-                            : "bg-emerald-500 shadow-md shadow-emerald-500/20 border-2 border-white"
+                          ? "bg-white border-[3px] border-emerald-500 shadow-[0_0_18px_rgba(16,185,129,0.5)] scale-110"
+                          : "bg-emerald-500 shadow-md shadow-emerald-500/20 border-2 border-white"
                           }`}>
                           {isLatest ? (
                             <div className="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse ring-4 ring-emerald-500/20" />
