@@ -46,14 +46,39 @@ export default function AdminDashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
+  const [copiedInvoice, setCopiedInvoice] = useState(null);
+
+  /* ✅ SEARCH & FILTER STATE */
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   /* ✅ PAGINATION STATE (5 items per page) */
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
 
-  const totalPages = Math.ceil(shipments.length / ITEMS_PER_PAGE) || 1;
+  // Filter shipments based on search term & status filter
+  const filteredShipments = shipments.filter(ship => {
+    const matchesSearch =
+      (ship.id || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (ship.customerName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (ship.phone || "").includes(searchTerm) ||
+      (ship.origin || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (ship.destination || "").toLowerCase().includes(searchTerm.toLowerCase());
+
+    if (!matchesSearch) return false;
+
+    if (statusFilter === "delivered") return ship.currentStep === trackingSteps.length - 1;
+    if (statusFilter === "active") return ship.currentStep < trackingSteps.length - 1;
+    return true;
+  });
+
+  const totalPages = Math.ceil(filteredShipments.length / ITEMS_PER_PAGE) || 1;
   const safePage = Math.min(currentPage, totalPages);
-  const paginatedShipments = shipments.slice((safePage - 1) * ITEMS_PER_PAGE, safePage * ITEMS_PER_PAGE);
+  const paginatedShipments = filteredShipments.slice((safePage - 1) * ITEMS_PER_PAGE, safePage * ITEMS_PER_PAGE);
+
+  // Operational stats
+  const activeCount = shipments.filter(s => s.currentStep < trackingSteps.length - 1).length;
+  const deliveredCount = shipments.filter(s => s.currentStep === trackingSteps.length - 1).length;
 
   const [formData, setFormData] = useState({
     invoice: "",
@@ -67,6 +92,7 @@ export default function AdminDashboard() {
     currentStep: 0,
     currentLocation: "",
     updateText: "",
+    updatedBy: "",
     useAutoTimestamp: true,
     manualTimestamp: "",
     lastUpdated: "",
@@ -140,23 +166,27 @@ export default function AdminDashboard() {
 
       const statusTextToUse = formData.updateText.trim() || trackingSteps[formData.currentStep] || "Status Update";
 
+      const updatedByName = formData.updatedBy.trim() || user?.email || "Admin";
+
       const newEntry = {
         step: statusTextToUse,
         statusText: statusTextToUse,
         location: formData.currentLocation || "",
+        updatedBy: updatedByName,
         date: timestampToUse,
         timestamp: timestampToUse
       };
 
       const lastHistory = updatedHistory[updatedHistory.length - 1];
 
-      if (!lastHistory || lastHistory.statusText !== newEntry.statusText || lastHistory.date !== newEntry.date || lastHistory.location !== newEntry.location) {
+      if (!lastHistory || lastHistory.statusText !== newEntry.statusText || lastHistory.date !== newEntry.date || lastHistory.location !== newEntry.location || lastHistory.updatedBy !== newEntry.updatedBy) {
         updatedHistory.push(newEntry);
       }
 
       const cleanData = {
         ...formData,
         updateText: statusTextToUse,
+        updatedBy: updatedByName,
         lastUpdated: timestampToUse,
         history: updatedHistory
       };
@@ -209,6 +239,7 @@ export default function AdminDashboard() {
       currentStep: 0,
       currentLocation: "",
       updateText: "",
+      updatedBy: "",
       useAutoTimestamp: true,
       manualTimestamp: "",
       lastUpdated: "",
@@ -256,6 +287,7 @@ export default function AdminDashboard() {
       currentStep: ship.currentStep || 0,
       currentLocation: ship.currentLocation || "",
       updateText: ship.updateText || (trackingSteps[ship.currentStep] || ""),
+      updatedBy: ship.updatedBy || "",
       useAutoTimestamp: true,
       manualTimestamp: localTime || getCurrentDateTimeLocal(),
       lastUpdated: ship.lastUpdated || "",
@@ -264,6 +296,49 @@ export default function AdminDashboard() {
 
     setIsEditing(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+
+  /* ✅ COPY INVOICE / TRACKING LINK */
+  const handleCopyInvoice = (inv) => {
+    navigator.clipboard.writeText(inv);
+    setCopiedInvoice(inv);
+    setTimeout(() => setCopiedInvoice(null), 2000);
+  };
+
+  /* ✅ 1-CLICK QUICK ADVANCE FROM LIST */
+  const handleQuickAdvance = async (ship) => {
+    if (ship.currentStep >= trackingSteps.length - 1) return;
+
+    const nextStepIdx = ship.currentStep + 1;
+    const nextStepText = trackingSteps[nextStepIdx];
+    const nowIso = new Date().toISOString();
+    const updaterName = user?.email || "Admin";
+
+    const newHistoryEntry = {
+      step: nextStepText,
+      statusText: nextStepText,
+      location: ship.currentLocation || "",
+      updatedBy: updaterName,
+      date: nowIso,
+      timestamp: nowIso
+    };
+
+    const updatedHistory = [...(ship.history || []), newHistoryEntry];
+    const docRef = doc(db, "shipments", ship.id);
+
+    try {
+      await setDoc(docRef, {
+        ...ship,
+        currentStep: nextStepIdx,
+        updateText: nextStepText,
+        updatedBy: updaterName,
+        lastUpdated: nowIso,
+        history: updatedHistory
+      });
+    } catch (e) {
+      console.error("Quick advance error", e);
+    }
   };
 
   /* ✅ NEXT STEP */
@@ -350,20 +425,42 @@ export default function AdminDashboard() {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-2"
+            className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2"
           >
             <div>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Shipment Management</h2>
-              <p className="text-slate-500 mt-2 font-medium text-lg">Create, edit, and monitor global logistics operations.</p>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Shipment Control Center</h2>
+              <p className="text-slate-500 mt-1 font-medium text-base">Real-time management, automated status tracking, and dispatch control.</p>
             </div>
-            <div className="flex gap-4 w-full md:w-auto">
-              <div className="bg-white px-6 py-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition-all w-full md:w-auto justify-between md:justify-start">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
-                  <Navigation size={24} />
+
+            {/* Operational Summary Counters */}
+            <div className="flex flex-wrap gap-3 w-full md:w-auto">
+              <div className="bg-white px-4 py-3 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3 hover:shadow-md transition-all flex-1 md:flex-none">
+                <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold">
+                  <Package size={20} />
                 </div>
-                <div className="flex flex-col text-right md:text-left">
-                  <span className="text-xs font-bold text-slate-400 border-slate-200 uppercase tracking-widest">Active Shipments</span>
-                  <span className="text-3xl font-black text-slate-800 leading-none mt-1">{shipments.length}</span>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total</span>
+                  <span className="text-2xl font-black text-slate-800 leading-none mt-0.5">{shipments.length}</span>
+                </div>
+              </div>
+
+              <div className="bg-white px-4 py-3 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3 hover:shadow-md transition-all flex-1 md:flex-none">
+                <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center font-bold">
+                  <Navigation size={20} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">In Transit</span>
+                  <span className="text-2xl font-black text-slate-800 leading-none mt-0.5">{activeCount}</span>
+                </div>
+              </div>
+
+              <div className="bg-white px-4 py-3 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3 hover:shadow-md transition-all flex-1 md:flex-none">
+                <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center font-bold">
+                  <CheckCircle2 size={20} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Delivered</span>
+                  <span className="text-2xl font-black text-slate-800 leading-none mt-0.5">{deliveredCount}</span>
                 </div>
               </div>
             </div>
@@ -376,23 +473,41 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="xl:col-span-8 bg-white shadow-lg shadow-slate-200/40 rounded-[2rem] p-6 md:p-8 border border-slate-200 flex flex-col"
+              className="xl:col-span-7 bg-white shadow-lg shadow-slate-200/40 rounded-[2rem] p-6 md:p-8 border border-slate-200 flex flex-col"
             >
-              <div className="flex items-center justify-between mb-8 pb-6 border-b border-slate-100">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
                 <h2 className="text-xl font-bold text-slate-900 flex items-center gap-3">
                   {isEditing ? (
-                    <><span className="text-orange-500 bg-orange-50 p-2 rounded-xl"><Edit2 size={24} /></span> Modify Shipment <span className="text-blue-600 font-mono bg-blue-50 px-3 py-1 rounded-lg ml-2 border border-blue-100">#{formData.invoice}</span></>
+                    <><span className="text-orange-500 bg-orange-50 p-2 rounded-xl"><Edit2 size={22} /></span> Modify Shipment <span className="text-blue-600 font-mono bg-blue-50 px-3 py-1 rounded-lg ml-2 border border-blue-100 text-sm">#{formData.invoice}</span></>
                   ) : (
-                    <><span className="text-blue-600 bg-blue-50 p-2 rounded-xl"><Package size={24} /></span> Create New Shipment</>
+                    <><span className="text-blue-600 bg-blue-50 p-2 rounded-xl"><Package size={22} /></span> Create New Shipment</>
                   )}
                 </h2>
+
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+                  >
+                    Cancel Edit
+                  </button>
+                )}
               </div>
 
-              <div className="grid md:grid-cols-2 gap-5 md:gap-6">
-                <InputField icon={<Package />} placeholder="Invoice Number" value={formData.invoice} disabled={isEditing} onChange={(e) => setFormData({ ...formData, invoice: e.target.value })} />
+              <div className="grid md:grid-cols-2 gap-4 sm:gap-5">
+                <InputField
+                  icon={<Package />}
+                  placeholder="Invoice Number"
+                  value={formData.invoice}
+                  disabled={isEditing}
+                  onChange={(e) => setFormData({ ...formData, invoice: e.target.value })}
+                />
+
                 <InputField icon={<User />} placeholder="Customer Name" value={formData.customerName} onChange={(e) => setFormData({ ...formData, customerName: e.target.value })} />
                 <InputField icon={<Mail />} placeholder="Email Address" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                 <InputField icon={<Phone />} placeholder="Phone Number" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
+
                 <LocationInput
                   icon={<PlaneTakeoff />}
                   placeholder="Origin Location"
@@ -406,8 +521,8 @@ export default function AdminDashboard() {
                   onChange={(val) => setFormData({ ...formData, destination: val })}
                 />
 
-                <InputField icon={<Package />} placeholder="Logistics Mode (e.g. Air, Sea)" value={formData.logisticsType} onChange={(e) => setFormData({ ...formData, logisticsType: e.target.value })} />
-                <InputField icon={<Package />} placeholder="Container Type (e.g. LCL, FCL)" value={formData.shipmentType} onChange={(e) => setFormData({ ...formData, shipmentType: e.target.value })} />
+                <InputField icon={<Package />} placeholder="Logistics Mode" value={formData.logisticsType} onChange={(e) => setFormData({ ...formData, logisticsType: e.target.value })} />
+                <InputField icon={<Package />} placeholder="Container Type" value={formData.shipmentType} onChange={(e) => setFormData({ ...formData, shipmentType: e.target.value })} />
 
                 {/* Status Step Preset Dropdown */}
                 <div className="relative group col-span-1 md:col-span-1">
@@ -440,45 +555,65 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              {/* NEW: TEXT FORMAT SHIPMENT UPDATE & MANUAL TIMESTAMP INPUT */}
+              {/* SHIPMENT UPDATE DETAILS */}
               <div className="mt-6 pt-6 border-t border-slate-100 space-y-4">
-                <div className="flex items-center gap-2 text-slate-800 font-bold text-sm uppercase tracking-wider">
-                  <FileText size={18} className="text-blue-600" />
-                  <span>Shipment Update Details (Text Format & Timestamp)</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-slate-800 font-bold text-xs uppercase tracking-wider">
+                    <FileText size={16} className="text-blue-600" />
+                    <span>Shipment Update Details (Text & Timestamp)</span>
+                  </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-5">
+                <div className="grid md:grid-cols-2 gap-4">
                   {/* Status Update Text Input */}
                   <div className="col-span-1 md:col-span-2">
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1 tracking-wider">
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1 tracking-wider">
                       Status Update (Text Format)
                     </label>
                     <div className="relative group">
-                      <div className="absolute top-4 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                      <div className="absolute top-3.5 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
                         <FileText size={18} strokeWidth={2.5} />
                       </div>
                       <input
                         type="text"
-                        placeholder="Enter update in text format (e.g., Cargo cleared customs at Dubai Port)"
+                        placeholder="Enter update in text format"
                         value={formData.updateText}
                         onChange={(e) => setFormData({ ...formData, updateText: e.target.value })}
-                        className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium hover:border-slate-300"
+                        className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium hover:border-slate-300 text-sm"
                       />
                     </div>
                   </div>
 
-                  {/* Timestamp Mode Selection: Auto vs Manual */}
+                  {/* Updated By Input */}
+                  <div className="col-span-1 md:col-span-2">
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1 tracking-wider">
+                      Updated By (Staff / Agent / Officer Name)
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute top-3.5 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                        <User size={18} strokeWidth={2.5} />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Enter who updated this shipment"
+                        value={formData.updatedBy}
+                        onChange={(e) => setFormData({ ...formData, updatedBy: e.target.value })}
+                        className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium hover:border-slate-300 text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Timestamp Mode Selection */}
                   <div className="col-span-1 md:col-span-2 space-y-2">
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                       Update Timestamp Option
                     </label>
 
-                    {/* Mode Toggle Buttons */}
                     <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
                       <button
                         type="button"
                         onClick={() => setFormData({ ...formData, useAutoTimestamp: true })}
-                        className={`py-2.5 px-4 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${formData.useAutoTimestamp
+                        className={`py-2 px-3 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${formData.useAutoTimestamp
                           ? "bg-white text-blue-600 shadow-sm border border-slate-200/80"
                           : "text-slate-500 hover:text-slate-800"
                           }`}
@@ -494,7 +629,7 @@ export default function AdminDashboard() {
                           useAutoTimestamp: false,
                           manualTimestamp: formData.manualTimestamp || getCurrentDateTimeLocal()
                         })}
-                        className={`py-2.5 px-4 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${!formData.useAutoTimestamp
+                        className={`py-2 px-3 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${!formData.useAutoTimestamp
                           ? "bg-white text-blue-600 shadow-sm border border-slate-200/80"
                           : "text-slate-500 hover:text-slate-800"
                           }`}
@@ -504,21 +639,20 @@ export default function AdminDashboard() {
                       </button>
                     </div>
 
-                    {/* Mode Content */}
                     {formData.useAutoTimestamp ? (
-                      <div className="p-3.5 bg-blue-50/80 border border-blue-100 rounded-xl flex items-center justify-between text-xs text-blue-700 font-medium">
+                      <div className="p-3 bg-blue-50/80 border border-blue-100 rounded-xl flex items-center justify-between text-xs text-blue-700 font-medium">
                         <span className="flex items-center gap-2">
-                          <CheckCircle2 size={16} className="text-blue-600 flex-shrink-0" />
-                          <span>Automatically uses system current time when saved.</span>
+                          <CheckCircle2 size={16} className="text-blue-600 shrink-0" />
+                          <span>Automatically uses system time when saved.</span>
                         </span>
                         <span className="font-mono text-[10px] text-blue-600 font-bold bg-white px-2 py-0.5 rounded border border-blue-200 shrink-0">
-                          Auto Mode Active
+                          Auto Active
                         </span>
                       </div>
                     ) : (
-                      <div className="space-y-1.5 pt-1">
+                      <div className="space-y-1 pt-1">
                         <div className="flex justify-between items-center">
-                          <span className="text-[11px] text-slate-500 font-semibold">Select or enter custom date & time:</span>
+                          <span className="text-[11px] text-slate-500 font-semibold">Select date & time:</span>
                           <button
                             type="button"
                             onClick={() => setFormData({ ...formData, manualTimestamp: getCurrentDateTimeLocal() })}
@@ -535,7 +669,7 @@ export default function AdminDashboard() {
                             type="datetime-local"
                             value={formData.manualTimestamp}
                             onChange={(e) => setFormData({ ...formData, manualTimestamp: e.target.value })}
-                            className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium hover:border-slate-300"
+                            className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium hover:border-slate-300 text-sm"
                           />
                         </div>
                       </div>
@@ -544,38 +678,39 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* NEW: LOGGED UPDATES HISTORY MANAGER */}
+              {/* LOGGED UPDATES HISTORY MANAGER */}
               {formData.history && formData.history.length > 0 && (
-                <div className="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                <div className="mt-5 p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                      <History size={16} className="text-emerald-600" /> Logged Updates History ({formData.history.length})
+                      <History size={16} className="text-emerald-600" /> Logged History ({formData.history.length})
                     </span>
                     <button
                       type="button"
                       onClick={handleAddTimelineEntry}
-                      className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all shadow-sm"
+                      className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all shadow-sm cursor-pointer"
                     >
-                      <Plus size={14} /> Add Current Update Entry
+                      <Plus size={14} /> Add Log Entry
                     </button>
                   </div>
-                  <div className="max-h-40 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+                  <div className="max-h-36 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                     {formData.history.map((entry, idx) => (
-                      <div key={idx} className="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs gap-2">
+                      <div key={idx} className="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between text-xs gap-2">
                         <div className="flex items-center gap-2 flex-1 overflow-hidden">
-                          <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
                           <span className="font-bold text-slate-800 truncate">{entry.statusText || entry.step}</span>
-                          {entry.location && <span className="text-slate-500 bg-slate-100 px-2 py-0.5 rounded text-[10px]">{entry.location}</span>}
+                          {entry.location && <span className="text-slate-500 bg-slate-100 px-2 py-0.5 rounded text-[10px] truncate">{entry.location}</span>}
+                          {entry.updatedBy && <span className="text-slate-400 text-[10px]">by {entry.updatedBy}</span>}
                         </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
+                        <div className="flex items-center gap-2 shrink-0">
                           <span className="text-slate-400 font-mono text-[10px]">
                             {entry.date ? new Date(entry.date).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : ""}
                           </span>
                           <button
                             type="button"
                             onClick={() => handleRemoveTimelineEntry(idx)}
-                            className="text-slate-400 hover:text-red-500 p-1"
-                            title="Remove update entry"
+                            className="text-slate-400 hover:text-red-500 p-1 cursor-pointer"
+                            title="Remove entry"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -586,136 +721,226 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-slate-100">
+              {/* FORM ACTION BUTTONS */}
+              <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-5 border-t border-slate-100">
                 <button
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="flex-1 flex items-center justify-center gap-3 py-4 px-6 text-white font-bold rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-70 disabled:active:scale-100 shadow-md shadow-blue-500/20"
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 px-6 text-white font-bold text-sm rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-70 shadow-md shadow-blue-500/20 cursor-pointer"
                 >
-                  <Save size={20} />
-                  {loading ? "Processing Update..." : isEditing ? "Save Modifications" : "Initialize Shipment"}
+                  <Save size={18} />
+                  {loading ? "Processing..." : isEditing ? "Save Modifications" : "Initialize Shipment"}
                 </button>
 
                 <button
                   onClick={nextStep}
                   disabled={formData.currentStep >= trackingSteps.length - 1}
-                  className="flex-1 flex items-center justify-center gap-3 py-4 px-6 text-slate-700 font-bold rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-[0.98] transition-all disabled:opacity-50 disabled:hover:bg-slate-100 disabled:active:scale-100"
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 px-6 text-slate-700 font-bold text-sm rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-[0.98] transition-all disabled:opacity-40 cursor-pointer border border-slate-200/80"
                 >
-                  Advance Status Step
-                  <ArrowRight size={20} />
+                  Advance Step
+                  <ArrowRight size={18} />
                 </button>
+
+                {(isEditing || formData.invoice || formData.customerName) && (
+                  <button
+                    onClick={resetForm}
+                    className="px-4 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-xl transition-all border border-slate-200 cursor-pointer"
+                    title="Clear form"
+                  >
+                    Clear
+                  </button>
+                )}
               </div>
             </motion.div>
 
-            {/* SHIPMENTS LIST PANEL */}
+            {/* SHIPMENTS LIST PANEL WITH REAL-TIME SEARCH & FILTERS */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="xl:col-span-4 flex flex-col space-y-6"
+              className="xl:col-span-5 flex flex-col space-y-6"
             >
               <div className="bg-white shadow-lg shadow-slate-200/40 rounded-[2rem] p-6 border border-slate-200 flex-1 flex flex-col min-h-[780px]">
-                <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
-                  <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    Recent Shipments
-                  </h2>
-                  {shipments.length > 0 && (
-                    <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200/60">
-                      Page {safePage} of {totalPages}
+
+                {/* Search & Filter Header */}
+                <div className="space-y-3 mb-5 pb-4 border-b border-slate-100">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                      Recent Shipments
+                    </h2>
+                    <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200/60">
+                      {filteredShipments.length} Found
                     </span>
-                  )}
+                  </div>
+
+                  {/* Real-time Search Box */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search invoice, customer, or place..."
+                      value={searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="w-full pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 placeholder-slate-400 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                    />
+                    <Package size={14} className="absolute left-3 top-3 text-slate-400" />
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm("")}
+                        className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Status Filter Pills */}
+                  <div className="flex items-center gap-1.5 pt-1">
+                    {[
+                      { id: "all", label: `All (${shipments.length})` },
+                      { id: "active", label: `Active (${activeCount})` },
+                      { id: "delivered", label: `Delivered (${deliveredCount})` }
+                    ].map((filter) => (
+                      <button
+                        key={filter.id}
+                        onClick={() => {
+                          setStatusFilter(filter.id);
+                          setCurrentPage(1);
+                        }}
+                        className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${statusFilter === filter.id
+                            ? "bg-slate-900 text-white shadow-sm"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          }`}
+                      >
+                        {filter.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="overflow-y-auto pr-2 space-y-4 custom-scrollbar flex-1 pb-4" style={{ scrollbarWidth: 'none' }}>
+                {/* List Items */}
+                <div className="overflow-y-auto pr-1 space-y-3.5 custom-scrollbar flex-1 pb-2">
                   <AnimatePresence mode="wait">
-                    {paginatedShipments.map((ship, idx) => (
-                      <motion.div
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ delay: idx * 0.05 }}
-                        key={ship.id}
-                        className="bg-white border border-slate-200 hover:border-blue-300 hover:shadow-lg p-5 rounded-2xl flex flex-col gap-3 transition-all duration-300 group relative overflow-hidden"
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="font-mono font-bold text-slate-900 group-hover:text-blue-600 transition-colors text-base">{ship.id}</p>
-                            <p className="text-sm text-slate-500 font-medium truncate w-40 mt-0.5" title={ship.customerName}>
-                              {ship.customerName}
-                            </p>
-                          </div>
-                          <div className="flex gap-1.5 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => handleEdit(ship)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit shipment">
-                              <Edit2 size={16} />
-                            </button>
-                            <button onClick={() => handleDelete(ship.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Delete shipment">
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </div>
+                    {paginatedShipments.map((ship, idx) => {
+                      const isComplete = ship.currentStep === trackingSteps.length - 1;
 
-                        <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1 mb-1 overflow-hidden">
-                          <div
-                            className="bg-blue-500 h-full rounded-full transition-all duration-500"
-                            style={{ width: `${(ship.currentStep / (trackingSteps.length - 1)) * 100}%` }}
-                          />
-                        </div>
-                        <div className="flex justify-between items-center mt-1">
-                          <span className="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-100 inline-block px-2 py-1 rounded-md max-w-[200px] truncate" title={ship.updateText || trackingSteps[ship.currentStep]}>
-                            {ship.updateText || trackingSteps[ship.currentStep]}
-                          </span>
-                          <span className="text-[11px] text-slate-400 font-bold">
-                            {Math.round((ship.currentStep / (trackingSteps.length - 1)) * 100)}%
-                          </span>
-                        </div>
-                      </motion.div>
-                    ))}
+                      return (
+                        <motion.div
+                          initial={{ opacity: 0, x: 10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          transition={{ delay: idx * 0.04 }}
+                          key={ship.id}
+                          className={`bg-white border p-4.5 rounded-2xl flex flex-col gap-2.5 transition-all duration-300 group relative ${isEditing && formData.invoice === ship.id
+                              ? "border-blue-500 ring-2 ring-blue-500/20 shadow-md bg-blue-50/20"
+                              : "border-slate-200 hover:border-blue-300 hover:shadow-md"
+                            }`}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono font-black text-slate-900 group-hover:text-blue-600 transition-colors text-sm">
+                                  {ship.id}
+                                </span>
 
-                    {shipments.length === 0 && (
+                                {/* Copy Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyInvoice(ship.id)}
+                                  className="text-slate-400 hover:text-blue-600 p-1 transition-colors cursor-pointer"
+                                  title="Copy invoice ID"
+                                >
+                                  {copiedInvoice === ship.id ? (
+                                    <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold">Copied!</span>
+                                  ) : (
+                                    <FileText size={13} />
+                                  )}
+                                </button>
+                              </div>
+
+                              <p className="text-xs text-slate-500 font-semibold truncate w-44 mt-0.5" title={ship.customerName}>
+                                {ship.customerName}
+                              </p>
+                            </div>
+
+                            {/* Actions: Quick Advance, Edit, Delete */}
+                            <div className="flex items-center gap-1">
+                              {!isComplete && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleQuickAdvance(ship)}
+                                  className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-[10px] font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer"
+                                  title="Advance to next step in 1-click"
+                                >
+                                  <span>Step +1</span>
+                                  <ArrowRight size={11} />
+                                </button>
+                              )}
+
+                              <button onClick={() => handleEdit(ship)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all cursor-pointer" title="Edit shipment">
+                                <Edit2 size={15} />
+                              </button>
+                              <button onClick={() => handleDelete(ship.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer" title="Delete shipment">
+                                <Trash2 size={15} />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Progress Line */}
+                          <div className="w-full bg-slate-100 rounded-full h-1.5 mt-0.5 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all duration-500 ${isComplete ? "bg-emerald-500" : "bg-blue-500"}`}
+                              style={{ width: `${(ship.currentStep / (trackingSteps.length - 1)) * 100}%` }}
+                            />
+                          </div>
+
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-100 inline-block px-2 py-0.5 rounded-md max-w-[200px] truncate" title={ship.updateText || trackingSteps[ship.currentStep]}>
+                              {ship.updateText || trackingSteps[ship.currentStep]}
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-mono font-bold">
+                              {Math.round((ship.currentStep / (trackingSteps.length - 1)) * 100)}%
+                            </span>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+
+                    {filteredShipments.length === 0 && (
                       <div className="text-center py-16 flex flex-col items-center">
-                        <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
-                          <Package className="text-slate-300 w-8 h-8" />
+                        <div className="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center mb-3 border border-slate-100">
+                          <Package className="text-slate-300 w-7 h-7" />
                         </div>
-                        <p className="text-slate-500 font-semibold text-lg">No records found</p>
-                        <p className="text-slate-400 text-sm mt-1">Add a shipment to populate this list.</p>
+                        <p className="text-slate-500 font-semibold text-sm">No matching shipments</p>
+                        <p className="text-slate-400 text-xs mt-1">Try adjusting search or status filter.</p>
                       </div>
                     )}
                   </AnimatePresence>
                 </div>
 
-                {/* PAGINATION CONTROLS (5 Shipments per page) */}
-                {shipments.length > ITEMS_PER_PAGE && (
-                  <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+                {/* PAGINATION CONTROLS */}
+                {filteredShipments.length > ITEMS_PER_PAGE && (
+                  <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                     <button
                       onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                       disabled={safePage === 1}
-                      className="px-3 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-transparent transition-all flex items-center gap-1 text-xs font-bold cursor-pointer"
+                      className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-30 transition-all flex items-center gap-1 text-xs font-bold cursor-pointer"
                     >
-                      <ChevronLeft size={16} /> Prev
+                      <ChevronLeft size={14} /> Prev
                     </button>
 
-                    <div className="flex items-center gap-1 overflow-x-auto max-w-[150px] custom-scrollbar">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                        <button
-                          key={pageNum}
-                          onClick={() => setCurrentPage(pageNum)}
-                          className={`min-w-[2rem] h-8 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                            safePage === pageNum
-                              ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
-                              : "text-slate-600 hover:bg-slate-100"
-                          }`}
-                        >
-                          {pageNum}
-                        </button>
-                      ))}
-                    </div>
+                    <span className="text-xs font-semibold text-slate-500">
+                      Page {safePage} of {totalPages}
+                    </span>
 
                     <button
                       onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                       disabled={safePage === totalPages}
-                      className="px-3 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-transparent transition-all flex items-center gap-1 text-xs font-bold cursor-pointer"
+                      className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-30 transition-all flex items-center gap-1 text-xs font-bold cursor-pointer"
                     >
-                      Next <ChevronRight size={16} />
+                      Next <ChevronRight size={14} />
                     </button>
                   </div>
                 )}

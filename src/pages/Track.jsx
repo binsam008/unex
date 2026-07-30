@@ -139,11 +139,18 @@ export default function Track() {
                         <p className="text-sm font-bold text-slate-900 mt-0.5">
                           {shipment.updateText || history[history.length - 1].statusText || history[history.length - 1].step}
                         </p>
-                        {(shipment.lastUpdated || (history.length > 0 && history[history.length - 1].date)) && (
-                          <p className="text-[11px] text-emerald-700 font-semibold mt-1">
-                            {formatTimestamp(shipment.lastUpdated || history[history.length - 1].date)}
-                          </p>
-                        )}
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          {(shipment.lastUpdated || (history.length > 0 && history[history.length - 1].date)) && (
+                            <span className="text-[11px] text-emerald-700 font-semibold">
+                              🕒 {formatTimestamp(shipment.lastUpdated || history[history.length - 1].date)}
+                            </span>
+                          )}
+                          {(shipment.updatedBy || (history.length > 0 && history[history.length - 1].updatedBy)) && (
+                            <span className="text-[11px] text-emerald-800 font-bold bg-emerald-100/70 px-2 py-0.5 rounded border border-emerald-200/60">
+                              👤 Updated by: {shipment.updatedBy || history[history.length - 1].updatedBy}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -225,6 +232,7 @@ export default function Track() {
                     const textContent = item.statusText || item.step || "Shipment Update";
                     const itemLocation = item.location || (isLatest ? shipment.currentLocation : "");
                     const itemDate = item.date || item.timestamp;
+                    const itemUpdatedBy = item.updatedBy || (isLatest ? shipment.updatedBy : "");
 
                     return (
                       <motion.div
@@ -275,6 +283,11 @@ export default function Track() {
                             {itemDate && (
                               <div className="bg-emerald-50 text-emerald-800 border border-emerald-100 px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1">
                                 🕒 {formatTimestamp(itemDate)}
+                              </div>
+                            )}
+                            {itemUpdatedBy && (
+                              <div className="bg-slate-100 text-slate-700 border border-slate-200/60 px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1">
+                                👤 {itemUpdatedBy}
                               </div>
                             )}
                           </div>
