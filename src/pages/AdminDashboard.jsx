@@ -13,7 +13,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import emailjs from "@emailjs/browser";
 import {
   Package, MapPin, User, Mail, Phone, PlaneTakeoff, Navigation,
-  Edit2, Trash2, ArrowRight, Save, ShieldAlert, Clock, FileText, Calendar, Plus, CheckCircle2, History, ChevronLeft, ChevronRight
+  Edit2, Trash2, ArrowRight, Save, ShieldAlert, Clock, FileText, Calendar, Plus, CheckCircle2, History, ChevronLeft, ChevronRight, List
 } from "lucide-react";
 import LocationInput from "../components/LocationInput";
 import { motion, AnimatePresence } from "framer-motion";
@@ -44,6 +44,7 @@ export default function AdminDashboard() {
 
   const [shipments, setShipments] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [isCustomStatus, setIsCustomStatus] = useState(false);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
   const [copiedInvoice, setCopiedInvoice] = useState(null);
@@ -51,10 +52,6 @@ export default function AdminDashboard() {
   /* ✅ SEARCH & FILTER STATE */
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-
-  /* ✅ PAGINATION STATE (5 items per page) */
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 5;
 
   // Filter shipments based on search term & status filter
   const filteredShipments = shipments.filter(ship => {
@@ -71,10 +68,6 @@ export default function AdminDashboard() {
     if (statusFilter === "active") return ship.currentStep < trackingSteps.length - 1;
     return true;
   });
-
-  const totalPages = Math.ceil(filteredShipments.length / ITEMS_PER_PAGE) || 1;
-  const safePage = Math.min(currentPage, totalPages);
-  const paginatedShipments = filteredShipments.slice((safePage - 1) * ITEMS_PER_PAGE, safePage * ITEMS_PER_PAGE);
 
   // Operational stats
   const activeCount = shipments.filter(s => s.currentStep < trackingSteps.length - 1).length;
@@ -226,6 +219,7 @@ export default function AdminDashboard() {
   /* ✅ RESET */
   const resetForm = () => {
     setIsEditing(false);
+    setIsCustomStatus(false);
 
     setFormData({
       invoice: "",
@@ -275,6 +269,10 @@ export default function AdminDashboard() {
       }
     }
 
+    const stepIndex = ship.currentStep || 0;
+    const defaultStepText = trackingSteps[stepIndex] || "";
+    const hasCustomText = ship.updateText && ship.updateText !== defaultStepText;
+
     setFormData({
       invoice: ship.id,
       customerName: ship.customerName || "",
@@ -284,9 +282,9 @@ export default function AdminDashboard() {
       shipmentType: ship.shipmentType || "FCL",
       origin: ship.origin || "",
       destination: ship.destination || "",
-      currentStep: ship.currentStep || 0,
+      currentStep: stepIndex,
       currentLocation: ship.currentLocation || "",
-      updateText: ship.updateText || (trackingSteps[ship.currentStep] || ""),
+      updateText: ship.updateText || defaultStepText,
       updatedBy: ship.updatedBy || "",
       useAutoTimestamp: true,
       manualTimestamp: localTime || getCurrentDateTimeLocal(),
@@ -294,6 +292,7 @@ export default function AdminDashboard() {
       history: ship.history || []
     });
 
+    setIsCustomStatus(!!hasCustomText);
     setIsEditing(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -524,27 +523,63 @@ export default function AdminDashboard() {
                 <InputField icon={<Package />} placeholder="Logistics Mode" value={formData.logisticsType} onChange={(e) => setFormData({ ...formData, logisticsType: e.target.value })} />
                 <InputField icon={<Package />} placeholder="Container Type" value={formData.shipmentType} onChange={(e) => setFormData({ ...formData, shipmentType: e.target.value })} />
 
-                {/* Status Step Preset Dropdown */}
+                {/* Status Step Dropdown / Custom Edit Dual Field */}
                 <div className="relative group col-span-1 md:col-span-1">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors z-10">
                     <Navigation size={18} strokeWidth={2.5} />
                   </div>
-                  <select
-                    value={formData.currentStep}
-                    onChange={(e) => {
-                      const idx = Number(e.target.value);
-                      setFormData({
-                        ...formData,
-                        currentStep: idx,
-                        updateText: trackingSteps[idx] || ""
-                      });
-                    }}
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all appearance-none font-medium cursor-pointer hover:border-slate-300"
-                  >
-                    {trackingSteps.map((step, i) => (
-                      <option key={i} value={i} className="text-slate-800">{step}</option>
-                    ))}
-                  </select>
+                  {!isCustomStatus ? (
+                    <div className="relative flex items-center">
+                      <select
+                        value={formData.currentStep}
+                        onChange={(e) => {
+                          const idx = Number(e.target.value);
+                          setFormData({
+                            ...formData,
+                            currentStep: idx,
+                            updateText: trackingSteps[idx] || ""
+                          });
+                        }}
+                        className="w-full pl-12 pr-10 py-4 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all appearance-none font-medium cursor-pointer hover:border-slate-300"
+                      >
+                        {trackingSteps.map((step, i) => (
+                          <option key={i} value={i} className="text-slate-800">{step}</option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setIsCustomStatus(true)}
+                        title="Edit status as custom text"
+                        className="absolute right-3.5 p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer z-10"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="relative flex items-center">
+                      <input
+                        type="text"
+                        placeholder="Enter custom status"
+                        value={formData.updateText}
+                        onChange={(e) => setFormData({ ...formData, updateText: e.target.value })}
+                        className="w-full pl-12 pr-10 py-3.5 bg-blue-50/50 border border-blue-300 text-slate-900 placeholder-slate-400 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCustomStatus(false);
+                          setFormData({
+                            ...formData,
+                            updateText: trackingSteps[formData.currentStep] || ""
+                          });
+                        }}
+                        title="Switch to status dropdown"
+                        className="absolute right-3.5 p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer z-10"
+                      >
+                        <List size={16} />
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <LocationInput
@@ -560,29 +595,11 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-slate-800 font-bold text-xs uppercase tracking-wider">
                     <FileText size={16} className="text-blue-600" />
-                    <span>Shipment Update Details (Text & Timestamp)</span>
+                    <span>Shipment Update Details (Timestamp & Officer)</span>
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
-                  {/* Status Update Text Input */}
-                  <div className="col-span-1 md:col-span-2">
-                    <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1 tracking-wider">
-                      Status Update (Text Format)
-                    </label>
-                    <div className="relative group">
-                      <div className="absolute top-3.5 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
-                        <FileText size={18} strokeWidth={2.5} />
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Enter update in text format"
-                        value={formData.updateText}
-                        onChange={(e) => setFormData({ ...formData, updateText: e.target.value })}
-                        className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium hover:border-slate-300 text-sm"
-                      />
-                    </div>
-                  </div>
 
                   {/* Updated By Input */}
                   <div className="col-span-1 md:col-span-2">
@@ -779,10 +796,7 @@ export default function AdminDashboard() {
                       type="text"
                       placeholder="Search invoice, customer, or place..."
                       value={searchTerm}
-                      onChange={(e) => {
-                        setSearchTerm(e.target.value);
-                        setCurrentPage(1);
-                      }}
+                      onChange={(e) => setSearchTerm(e.target.value)}
                       className="w-full pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 placeholder-slate-400 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                     />
                     <Package size={14} className="absolute left-3 top-3 text-slate-400" />
@@ -805,10 +819,7 @@ export default function AdminDashboard() {
                     ].map((filter) => (
                       <button
                         key={filter.id}
-                        onClick={() => {
-                          setStatusFilter(filter.id);
-                          setCurrentPage(1);
-                        }}
+                        onClick={() => setStatusFilter(filter.id)}
                         className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${statusFilter === filter.id
                             ? "bg-slate-900 text-white shadow-sm"
                             : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -823,7 +834,7 @@ export default function AdminDashboard() {
                 {/* List Items */}
                 <div className="overflow-y-auto pr-1 space-y-3.5 custom-scrollbar flex-1 pb-2">
                   <AnimatePresence mode="wait">
-                    {paginatedShipments.map((ship, idx) => {
+                    {filteredShipments.map((ship, idx) => {
                       const isComplete = ship.currentStep === trackingSteps.length - 1;
 
                       return (
@@ -881,7 +892,7 @@ export default function AdminDashboard() {
 
                               <button onClick={() => handleEdit(ship)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all cursor-pointer" title="Edit shipment">
                                 <Edit2 size={15} />
-                              </button>
+                                </button>
                               <button onClick={() => handleDelete(ship.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer" title="Delete shipment">
                                 <Trash2 size={15} />
                               </button>
@@ -919,31 +930,6 @@ export default function AdminDashboard() {
                     )}
                   </AnimatePresence>
                 </div>
-
-                {/* PAGINATION CONTROLS */}
-                {filteredShipments.length > ITEMS_PER_PAGE && (
-                  <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                    <button
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                      disabled={safePage === 1}
-                      className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-30 transition-all flex items-center gap-1 text-xs font-bold cursor-pointer"
-                    >
-                      <ChevronLeft size={14} /> Prev
-                    </button>
-
-                    <span className="text-xs font-semibold text-slate-500">
-                      Page {safePage} of {totalPages}
-                    </span>
-
-                    <button
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                      disabled={safePage === totalPages}
-                      className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-30 transition-all flex items-center gap-1 text-xs font-bold cursor-pointer"
-                    >
-                      Next <ChevronRight size={14} />
-                    </button>
-                  </div>
-                )}
               </div>
             </motion.div>
 

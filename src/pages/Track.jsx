@@ -205,30 +205,35 @@ export default function Track() {
                 </div>
               </div>
 
-              {/* RIGHT COLUMN: VERTICAL TIMELINE WITH GREEN DOTS */}
+              {/* RIGHT COLUMN: VERTICAL TIMELINE WITH ORANGE & GREEN MIX COMPACT DOTS */}
               <div className="lg:col-span-7 bg-white/80 backdrop-blur-xl border border-white rounded-[2rem] p-8 shadow-2xl shadow-slate-200/50">
                 <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-100">
                   <h3 className="text-xl font-black text-slate-800 flex items-center gap-2">
                     Journey Logs & Status Updates
                   </h3>
-                  <span className="text-xs font-bold px-3 py-1 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full animate-pulse flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" /> LIVE UPDATES
+                  <span className="text-xs font-bold px-3 py-1 bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-emerald-500/10 text-slate-800 border border-orange-200/60 rounded-full animate-pulse flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-gradient-to-r from-orange-500 to-emerald-500" /> LIVE UPDATES
                   </span>
                 </div>
 
-                <div className="relative space-y-0 pl-1">
-                  {/* VERTICAL GREEN LINE */}
-                  <div className="absolute left-[19px] top-4 bottom-8 w-[3px] bg-slate-100 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ height: 0 }}
-                      animate={{ height: "100%" }}
-                      transition={{ duration: 1.2, ease: "easeInOut" }}
-                      className="w-full bg-gradient-to-b from-emerald-500 via-green-400 to-emerald-600"
-                    />
+                <div className="relative space-y-0">
+                  {/* VERTICAL CONNECTING LINE (PERFECTLY CENTERED WITH DOTS) */}
+                  <div className="absolute left-0 top-3 bottom-6 w-8 flex justify-center pointer-events-none">
+                    <div className="w-[3px] h-full bg-slate-100 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: "100%" }}
+                        transition={{ duration: 1.2, ease: "easeInOut" }}
+                        className="w-full bg-gradient-to-b from-emerald-500 via-orange-500 via-emerald-500 to-orange-500"
+                      />
+                    </div>
                   </div>
 
                   {displayItems.map((item, index) => {
                     const isLatest = index === displayItems.length - 1;
+                    // 1 & 2 Green (index 0,1), 3 & 4 Orange (index 2,3), 5 & 6 Green (index 4,5), etc.
+                    const isOrangeGroup = Math.floor(index / 2) % 2 === 1;
+
                     const textContent = item.statusText || item.step || "Shipment Update";
                     const itemLocation = item.location || (isLatest ? shipment.currentLocation : "");
                     const itemDate = item.date || item.timestamp;
@@ -240,28 +245,39 @@ export default function Track() {
                         initial={{ x: 20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: index * 0.08 }}
-                        className="relative pl-12 pb-8 last:pb-0 flex items-start transition-all duration-300"
+                        className="relative pl-12 pb-9 last:pb-0 flex items-start transition-all duration-300"
                       >
-                        {/* GREEN DOT / STATUS ICON */}
-                        <div className={`absolute -left-1 top-0 w-10 h-10 rounded-full flex items-center justify-center z-10 transition-all ${isLatest
-                          ? "bg-white border-[3px] border-emerald-500 shadow-[0_0_18px_rgba(16,185,129,0.5)] scale-110"
-                          : "bg-emerald-500 shadow-md shadow-emerald-500/20 border-2 border-white"
-                          }`}>
-                          {isLatest ? (
-                            <div className="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse ring-4 ring-emerald-500/20" />
-                          ) : (
-                            <div className="w-2.5 h-2.5 rounded-full bg-white" />
-                          )}
+                        {/* COMPACT DOT (PERFECTLY CENTERED ON LINE) */}
+                        <div className="absolute left-0 top-0.5 w-8 flex justify-center z-10 pointer-events-none">
+                          <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all pointer-events-auto ${isLatest
+                            ? `bg-white border-[2.5px] ${isOrangeGroup ? 'border-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.5)]' : 'border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]'} scale-110`
+                            : `${isOrangeGroup ? 'bg-orange-500 shadow-orange-500/25' : 'bg-emerald-500 shadow-emerald-500/25'} shadow-sm border-2 border-white`
+                            }`}>
+                            {isLatest ? (
+                              <div className={`w-2.5 h-2.5 rounded-full animate-pulse ${isOrangeGroup ? 'bg-orange-500 ring-2 ring-orange-500/20' : 'bg-emerald-500 ring-2 ring-emerald-500/20'}`} />
+                            ) : (
+                              <div className="w-2 h-2 rounded-full bg-white" />
+                            )}
+                          </div>
                         </div>
 
-                        <div className={`flex-1 bg-white border p-4 rounded-xl shadow-sm transition-all -mt-2 ${isLatest ? "border-emerald-300 shadow-emerald-500/5 ring-2 ring-emerald-500/10" : "border-slate-100 hover:border-emerald-200"
+                        <div className={`flex-1 bg-white border p-4 rounded-xl shadow-sm transition-all -mt-1.5 ${isLatest
+                          ? isOrangeGroup
+                            ? "border-orange-300 shadow-orange-500/5 ring-2 ring-orange-500/10"
+                            : "border-emerald-300 shadow-emerald-500/5 ring-2 ring-emerald-500/10"
+                          : isOrangeGroup
+                            ? "border-slate-100 hover:border-orange-200"
+                            : "border-slate-100 hover:border-emerald-200"
                           }`}>
                           <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-                            <p className={`text-sm md:text-base font-bold ${isLatest ? "text-emerald-700" : "text-slate-800"}`}>
+                            <p className={`text-sm md:text-base font-bold ${isLatest
+                              ? isOrangeGroup ? "text-orange-600" : "text-emerald-700"
+                              : "text-slate-800"
+                              }`}>
                               {textContent}
                             </p>
                             {isLatest && (
-                              <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">
+                              <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${isOrangeGroup ? "bg-orange-100 text-orange-800" : "bg-emerald-100 text-emerald-800"}`}>
                                 Current
                               </span>
                             )}
@@ -281,7 +297,7 @@ export default function Track() {
                               </a>
                             )}
                             {itemDate && (
-                              <div className="bg-emerald-50 text-emerald-800 border border-emerald-100 px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1">
+                              <div className={`border px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 ${isOrangeGroup ? "bg-orange-50 text-orange-800 border-orange-100" : "bg-emerald-50 text-emerald-800 border-emerald-100"}`}>
                                 🕒 {formatTimestamp(itemDate)}
                               </div>
                             )}
