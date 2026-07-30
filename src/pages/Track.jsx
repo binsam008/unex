@@ -211,8 +211,8 @@ export default function Track() {
                   <h3 className="text-xl font-black text-slate-800 flex items-center gap-2">
                     Journey Logs & Status Updates
                   </h3>
-                  <span className="text-xs font-bold px-3 py-1 bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-emerald-500/10 text-slate-800 border border-orange-200/60 rounded-full animate-pulse flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-gradient-to-r from-orange-500 to-emerald-500" /> LIVE UPDATES
+                  <span className="text-xs font-bold px-3 py-1 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full animate-pulse flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" /> LIVE UPDATES
                   </span>
                 </div>
 
@@ -224,16 +224,13 @@ export default function Track() {
                         initial={{ height: 0 }}
                         animate={{ height: "100%" }}
                         transition={{ duration: 1.2, ease: "easeInOut" }}
-                        className="w-full bg-gradient-to-b from-emerald-500 via-orange-500 via-emerald-500 to-orange-500"
+                        className="w-full bg-gradient-to-b from-emerald-500 via-green-400 to-emerald-600"
                       />
                     </div>
                   </div>
 
                   {displayItems.map((item, index) => {
                     const isLatest = index === displayItems.length - 1;
-                    // 1 & 2 Green (index 0,1), 3 & 4 Orange (index 2,3), 5 & 6 Green (index 4,5), etc.
-                    const isOrangeGroup = Math.floor(index / 2) % 2 === 1;
-
                     const textContent = item.statusText || item.step || "Shipment Update";
                     const itemLocation = item.location || (isLatest ? shipment.currentLocation : "");
                     const itemDate = item.date || item.timestamp;
@@ -247,14 +244,14 @@ export default function Track() {
                         transition={{ delay: index * 0.08 }}
                         className="relative pl-12 pb-9 last:pb-0 flex items-start transition-all duration-300"
                       >
-                        {/* COMPACT DOT (PERFECTLY CENTERED ON LINE) */}
+                        {/* COMPACT GREEN DOT (PERFECTLY CENTERED ON LINE) */}
                         <div className="absolute left-0 top-0.5 w-8 flex justify-center z-10 pointer-events-none">
                           <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all pointer-events-auto ${isLatest
-                            ? `bg-white border-[2.5px] ${isOrangeGroup ? 'border-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.5)]' : 'border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]'} scale-110`
-                            : `${isOrangeGroup ? 'bg-orange-500 shadow-orange-500/25' : 'bg-emerald-500 shadow-emerald-500/25'} shadow-sm border-2 border-white`
+                            ? "bg-white border-[2.5px] border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] scale-110"
+                            : "bg-emerald-500 shadow-sm border-2 border-white shadow-emerald-500/25"
                             }`}>
                             {isLatest ? (
-                              <div className={`w-2.5 h-2.5 rounded-full animate-pulse ${isOrangeGroup ? 'bg-orange-500 ring-2 ring-orange-500/20' : 'bg-emerald-500 ring-2 ring-emerald-500/20'}`} />
+                              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse ring-2 ring-emerald-500/20" />
                             ) : (
                               <div className="w-2 h-2 rounded-full bg-white" />
                             )}
@@ -262,22 +259,15 @@ export default function Track() {
                         </div>
 
                         <div className={`flex-1 bg-white border p-4 rounded-xl shadow-sm transition-all -mt-1.5 ${isLatest
-                          ? isOrangeGroup
-                            ? "border-orange-300 shadow-orange-500/5 ring-2 ring-orange-500/10"
-                            : "border-emerald-300 shadow-emerald-500/5 ring-2 ring-emerald-500/10"
-                          : isOrangeGroup
-                            ? "border-slate-100 hover:border-orange-200"
-                            : "border-slate-100 hover:border-emerald-200"
+                          ? "border-emerald-300 shadow-emerald-500/5 ring-2 ring-emerald-500/10"
+                          : "border-slate-100 hover:border-emerald-200"
                           }`}>
                           <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-                            <p className={`text-sm md:text-base font-bold ${isLatest
-                              ? isOrangeGroup ? "text-orange-600" : "text-emerald-700"
-                              : "text-slate-800"
-                              }`}>
+                            <p className={`text-sm md:text-base font-bold ${isLatest ? "text-emerald-700" : "text-slate-800"}`}>
                               {textContent}
                             </p>
                             {isLatest && (
-                              <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${isOrangeGroup ? "bg-orange-100 text-orange-800" : "bg-emerald-100 text-emerald-800"}`}>
+                              <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
                                 Current
                               </span>
                             )}
@@ -297,7 +287,7 @@ export default function Track() {
                               </a>
                             )}
                             {itemDate && (
-                              <div className={`border px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 ${isOrangeGroup ? "bg-orange-50 text-orange-800 border-orange-100" : "bg-emerald-50 text-emerald-800 border-emerald-100"}`}>
+                              <div className="border px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 bg-emerald-50 text-emerald-800 border-emerald-100">
                                 🕒 {formatTimestamp(itemDate)}
                               </div>
                             )}

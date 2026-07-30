@@ -472,7 +472,7 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="xl:col-span-7 bg-white shadow-lg shadow-slate-200/40 rounded-[2rem] p-6 md:p-8 border border-slate-200 flex flex-col"
+              className="xl:col-span-8 bg-white shadow-lg shadow-slate-200/40 rounded-[2rem] p-6 md:p-8 border border-slate-200 flex flex-col"
             >
               <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
                 <h2 className="text-xl font-bold text-slate-900 flex items-center gap-3">
@@ -775,7 +775,7 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="xl:col-span-5 flex flex-col space-y-6"
+              className="xl:col-span-4 flex flex-col space-y-6"
             >
               <div className="bg-white shadow-lg shadow-slate-200/40 rounded-[2rem] p-6 border border-slate-200 flex-1 flex flex-col min-h-[780px]">
 
