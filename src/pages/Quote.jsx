@@ -1,3 +1,4 @@
+import LocationInput from "../components/LocationInput";
 import { useState } from "react";
 import emailjs from "@emailjs/browser";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,7 +10,8 @@ import {
   Navigation, 
   Box, 
   PhoneCall,
-  CheckCircle2
+  CheckCircle2,
+  MapPin
 } from "lucide-react";
 
 export default function DashboardQuote() {
@@ -69,10 +71,27 @@ export default function DashboardQuote() {
                 subtitle="Where is the origin and destination of your cargo?"
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                  <FloatingInput label="From (Origin)" icon={<Navigation size={18}/>} value={formData.origin} onChange={(e) => setFormData({...formData, origin: e.target.value})} />
-                  <FloatingInput label="To (Destination)" icon={<Navigation size={18} className="rotate-90"/>} value={formData.destination} onChange={(e) => setFormData({...formData, destination: e.target.value})} />
+                  <div>
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">From (Origin)</label>
+                    <LocationInput
+                      placeholder="Search Origin City or Hub"
+                      icon={<Navigation size={18} />}
+                      value={formData.origin}
+                      onChange={(val) => setFormData({ ...formData, origin: val })}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">To (Destination)</label>
+                    <LocationInput
+                      placeholder="Search Destination City or Hub"
+                      icon={<MapPin size={18} />}
+                      value={formData.destination}
+                      onChange={(val) => setFormData({ ...formData, destination: val })}
+                    />
+                  </div>
                 </div>
-                <button onClick={nextStep} className="mt-10 w-full md:w-auto bg-[#0A1D45] text-white px-10 py-4 rounded-full font-bold flex items-center justify-center gap-3 hover:bg-orange-500 transition-all">
+                <button onClick={nextStep} className="mt-10 w-full md:w-auto bg-[#0A1D45] text-white px-10 py-4 rounded-full font-bold flex items-center justify-center gap-3 hover:bg-orange-500 transition-all cursor-pointer">
                   Next Step <ArrowRight size={20}/>
                 </button>
               </FormSection>
